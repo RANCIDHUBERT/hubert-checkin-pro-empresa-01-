@@ -3002,7 +3002,7 @@
 
       try {
         await asegurarSesionAnonima();
-        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura');
+        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura2');
 
         for (const item of cola) {
           try {
