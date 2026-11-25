@@ -1083,13 +1083,13 @@
               }
             });
             historial = combinados.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            localStorage.setItem('checkin_history', JSON.stringify(historial));
+            localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
           } else {
             historial = pendientesLocales.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             if (historial.length > 0) {
-              localStorage.setItem('checkin_history', JSON.stringify(historial));
+              localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
             } else {
-              localStorage.removeItem('checkin_history');
+              localStorage.removeItem('checkin_e1_history');
             }
           }
           programarRenderHistorial();
@@ -1118,10 +1118,10 @@
                 empNorm.registeredDeviceToken = empNorm.registeredDeviceTokens[0] || null;
                 return empNorm;
               });
-            localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+            localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
           } else {
             empleados = [];
-            localStorage.removeItem('checkin_employees');
+            localStorage.removeItem('checkin_e1_employees');
           }
           renderEmployeeSelect();
           renderEmployeesTable();
@@ -1148,20 +1148,20 @@
                 hashClaveEmpresa(cfgVal.password).then((h) => {
                   if (h) {
                     companyPasswordHashCache = h;
-                    try { localStorage.setItem('checkin_company_pass_hash', h); } catch (_) {}
+                    try { localStorage.setItem('checkin_e1_company_pass_hash', h); } catch (_) {}
                   }
                 });
               }
               companyLogo = cfgVal.logo || '';
               if (companyLogo) {
-                localStorage.setItem('checkin_company_logo', companyLogo);
+                localStorage.setItem('checkin_e1_company_logo', companyLogo);
               } else {
-                localStorage.removeItem('checkin_company_logo');
+                localStorage.removeItem('checkin_e1_company_logo');
               }
               if (cfgVal.officialEntryTime) officialEntryTime = cfgVal.officialEntryTime;
               if (typeof cfgVal.toleranceMinutes === 'number') toleranceMinutes = cfgVal.toleranceMinutes;
               try {
-                localStorage.setItem('checkin_company_cfg', JSON.stringify({
+                localStorage.setItem('checkin_e1_company_cfg', JSON.stringify({
                   name: companyName,
                   officialEntryTime: officialEntryTime,
                   toleranceMinutes: toleranceMinutes
@@ -1325,27 +1325,27 @@
     }
 
     function obtenerDeviceToken() {
-      let token = localStorage.getItem('checkin_device_token');
+      let token = localStorage.getItem('checkin_e1_device_token');
       if (!token) {
         token = 'DEV-' + Math.random().toString(36).substring(2, 9).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
-        localStorage.setItem('checkin_device_token', token);
+        localStorage.setItem('checkin_e1_device_token', token);
       }
       return token;
     }
 
     const currentDeviceToken = obtenerDeviceToken();
 
-    let empleados = JSON.parse(localStorage.getItem('checkin_employees')) || [];
-    let historial = (JSON.parse(localStorage.getItem('checkin_history')) || []).filter(h => h && h.eventType !== 'Login Empresa');
-    localStorage.removeItem('checkin_admin_pin');
+    let empleados = JSON.parse(localStorage.getItem('checkin_e1_employees')) || [];
+    let historial = (JSON.parse(localStorage.getItem('checkin_e1_history')) || []).filter(h => h && h.eventType !== 'Login Empresa');
+    localStorage.removeItem('checkin_e1_admin_pin');
     
     // LOGIN DE EMPRESA, LOGO Y COLABORADOR ACTIVO
     let companyPassword = null; // se llena con la clave real desde Firebase
     let companyPasswordFromServer = false;
-    let companyPasswordHashCache = localStorage.getItem('checkin_company_pass_hash') || '';
+    let companyPasswordHashCache = localStorage.getItem('checkin_e1_company_pass_hash') || '';
     let companyName = 'HUBERT CHECKIN PRO';
     try {
-      const cfgGuardada = JSON.parse(localStorage.getItem('checkin_company_cfg') || 'null');
+      const cfgGuardada = JSON.parse(localStorage.getItem('checkin_e1_company_cfg') || 'null');
       if (cfgGuardada) {
         if (cfgGuardada.name) companyName = cfgGuardada.name;
       }
@@ -1358,7 +1358,7 @@
       const buf = await window.crypto.subtle.digest('SHA-256', datos);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
-    let companyLogo = localStorage.getItem('checkin_company_logo') || '';
+    let companyLogo = localStorage.getItem('checkin_e1_company_logo') || '';
     let isCompanyLoggedIn = false;
     let activeLoggedInEmp = null;
 
@@ -1366,7 +1366,7 @@
     let officialEntryTime = '08:00';
     let toleranceMinutes = 15;
     try {
-      const cfgH = JSON.parse(localStorage.getItem('checkin_company_cfg') || 'null');
+      const cfgH = JSON.parse(localStorage.getItem('checkin_e1_company_cfg') || 'null');
       if (cfgH && cfgH.officialEntryTime) officialEntryTime = cfgH.officialEntryTime;
       if (cfgH && typeof cfgH.toleranceMinutes === 'number') toleranceMinutes = cfgH.toleranceMinutes;
     } catch (_) {}
@@ -1744,9 +1744,9 @@
       }
 
       if (companyLogo) {
-        localStorage.setItem('checkin_company_logo', companyLogo);
+        localStorage.setItem('checkin_e1_company_logo', companyLogo);
       } else {
-        localStorage.removeItem('checkin_company_logo');
+        localStorage.removeItem('checkin_e1_company_logo');
       }
 
       const updateObj = {
@@ -2264,7 +2264,7 @@
           await employeesRef.child(emp._key || empId.replace(/[^a-zA-Z0-9]/g, '_')).update(updateData);
         }
         Object.assign(emp, updateData);
-        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
         renderTurnosTable();
         renderHoursTable();
         actualizarBadgeHorario();
@@ -2299,7 +2299,7 @@
         delete emp.turnoEntrada;
         delete emp.turnoSalida;
         delete emp.turnoTolerancia;
-        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
         renderTurnosTable();
         renderHoursTable();
         actualizarBadgeHorario();
@@ -2753,7 +2753,7 @@
         showToast('Vincula tu huella', 'Coloca tu dedo en el sensor para vincularla a este equipo.', 'info');
         const datos = await enrolarHuella(emp);
         Object.assign(emp, datos);
-        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
         if (employeesRef) {
           employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update(datos).catch(() => {});
         }
@@ -2956,14 +2956,14 @@
     // =====================================================================
     function obtenerColaOffline() {
       try {
-        return JSON.parse(localStorage.getItem('checkin_offline_queue') || '[]');
+        return JSON.parse(localStorage.getItem('checkin_e1_offline_queue') || '[]');
       } catch (_) {
         return [];
       }
     }
 
     function guardarColaOffline(cola) {
-      localStorage.setItem('checkin_offline_queue', JSON.stringify(cola));
+      localStorage.setItem('checkin_e1_offline_queue', JSON.stringify(cola));
       actualizarIndicadorPendientes();
     }
 
@@ -3026,7 +3026,7 @@
         }
 
         guardarColaOffline(pendientes);
-        localStorage.setItem('checkin_history', JSON.stringify(historial));
+        localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
         renderHistoryTable();
         renderHoursTable();
 
@@ -3163,7 +3163,7 @@
         const nuevosEquipos = [...equiposActuales, currentDeviceToken];
         emp.registeredDeviceTokens = nuevosEquipos;
         emp.registeredDeviceToken = nuevosEquipos[0];
-        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
 
         if (employeesRef && navigator.onLine) {
           employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update({
@@ -3195,7 +3195,7 @@
           throw { code: 'functions/unavailable', message: 'Sin conexión a internet' };
         }
 
-        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura');
+        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura2');
         const respuesta = await registrarAsistenciaSegura(payloadServidor);
 
         const record = respuesta.data.record;
@@ -3224,7 +3224,7 @@
           if (!historial.some(h => h.id === record.id && h.empId === record.empId && h.eventType === record.eventType)) {
             historial.unshift(record);
           }
-          localStorage.setItem('checkin_history', JSON.stringify(historial));
+          localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
         }
 
         playSuccessSound();
@@ -3284,7 +3284,7 @@
           if (!historial.some(h => h.id === recordOffline.id && h.empId === recordOffline.empId && h.eventType === recordOffline.eventType)) {
             historial.unshift(recordOffline);
           }
-          localStorage.setItem('checkin_history', JSON.stringify(historial));
+          localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
 
           playSuccessSound();
           showToast(
@@ -3384,7 +3384,7 @@
         historial.unshift(record);
       });
 
-      localStorage.setItem('checkin_history', JSON.stringify(historial));
+      localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
 
       const rangoTxt = fechas.length > 1 ? `(${fechas.length} días: ${dateVal} al ${dateEndVal})` : `el ${dateVal}`;
       showToast('Movimiento Registrado', `${faltaType} guardada para ${emp.name} ${rangoTxt}`, conGoce ? 'success' : 'error');
@@ -3398,7 +3398,7 @@
     function eliminarRegistroHistorial(recordId) {
       if (confirm('¿Deseas eliminar este registro del historial y de la nube?')) {
         historial = historial.filter(h => h.id !== recordId);
-        localStorage.setItem('checkin_history', JSON.stringify(historial));
+        localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
 
         const colaActualizada = obtenerColaOffline().filter(item => item.record && item.record.id !== recordId);
         guardarColaOffline(colaActualizada);
@@ -4049,7 +4049,7 @@
           emp.credPubKey = null;
           emp.credAlg = null;
 
-          localStorage.setItem('checkin_employees', JSON.stringify(empleados));
+          localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
           if (employeesRef) {
             employeesRef.child(emp._key || empId.replace(/[^a-zA-Z0-9]/g, '_')).update({
               registeredDeviceTokens: null,
@@ -4092,7 +4092,7 @@
     function borrarTodoElHistorial() {
       if (confirm('¿Estás completamente seguro de borrar todo el historial de marcas en la nube? Esta acción no se puede deshacer.')) {
         historial = [];
-        localStorage.removeItem('checkin_history');
+        localStorage.removeItem('checkin_e1_history');
         guardarColaOffline([]);
         if (historyRef) {
           historyRef.remove();
