@@ -327,24 +327,16 @@
           </span>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2">Buscar por ID o Nombre de Empleado</label>
-          <!-- COMBOBOX / BUSCADOR INTERACTIVO -->
-          <div class="relative" id="employee-combobox-wrapper">
-            <div class="relative flex items-center">
-              <i data-lucide="search" class="w-4 h-4 text-yellow-400 absolute left-3.5 pointer-events-none z-10"></i>
-              <input type="text" id="employee-search-input" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="filterEmployeeCombobox()" onfocus="openEmployeeCombobox()" placeholder="Escribe tu ID de empleado (o nombre)..." class="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-xl pl-10 pr-10 py-3.5 focus:outline-none focus:border-yellow-400 font-medium text-sm">
-              <button type="button" onclick="toggleEmployeeCombobox()" class="absolute right-3 p-1 text-zinc-400 hover:text-yellow-400">
-                <i data-lucide="chevron-down" class="w-5 h-5"></i>
-              </button>
-            </div>
-
-            <!-- DESPLEGABLE CON LISTA FILTRABLE -->
-            <div id="employee-dropdown-list" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-zinc-950 border border-yellow-400/40 rounded-xl shadow-[0_20px_45px_rgba(0,0,0,0.9)] max-h-60 overflow-y-auto custom-scrollbar z-40 divide-y divide-zinc-800/80">
-              <!-- Carga dinámica -->
-            </div>
+        <div class="bg-zinc-950 border border-yellow-400/30 rounded-xl p-3 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2 text-xs text-zinc-300">
+            <i data-lucide="shield-check" class="w-4 h-4 text-yellow-400 flex-shrink-0"></i>
+            <span>Sesión bloqueada al colaborador activo</span>
           </div>
+          <button type="button" onclick="cambiarDeColaboradorConCandado()" class="px-2.5 py-1 bg-zinc-800 hover:bg-yellow-400 text-yellow-300 hover:text-zinc-950 border border-yellow-400/30 rounded-lg text-[11px] font-bold transition flex items-center gap-1 flex-shrink-0">
+            <i data-lucide="fingerprint" class="w-3.5 h-3.5"></i> Cambiar usuario
+          </button>
         </div>
+        <input type="hidden" id="employee-search-input" value="">
 
         <!-- TARJETA DETALLE EMPLEADO -->
         <div id="employee-card" class="bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-3 min-h-[140px] justify-center items-center text-center transition-all shadow-inner">
@@ -361,7 +353,7 @@
             Ingresa tu PIN Secreto de Empleado
           </label>
           <input type="password" id="employee-pin-input" autocomplete="new-password" oninput="checkCanSubmit()" maxlength="8" placeholder="****" class="w-full bg-zinc-900 border border-zinc-700 text-yellow-300 font-mono tracking-widest text-center text-xl rounded-lg px-3 py-2.5 focus:outline-none focus:border-yellow-400">
-          <p class="text-[11px] text-zinc-400 italic text-center">Requerido para confirmar tu identidad</p>
+          <p class="text-[11px] text-zinc-400 italic text-center">Se verificará tu PIN y tu huella digital en cada marcaje</p>
         </div>
 
         <!-- ESTADO GPS Y DISPOSITIVO EN TIEMPO REAL -->
@@ -1685,6 +1677,14 @@
         return;
       }
 
+      const equiposEmp = obtenerEquiposAutorizados(empObj);
+      const equipoYaDeEmp = equiposEmp.includes(currentDeviceToken);
+      if (!empObj.isAdmin && !equipoYaDeEmp && equiposEmp.length >= MAX_EQUIPOS_POR_USUARIO) {
+        alert(`Este dispositivo no está autorizado para ${empObj.name}. Ya alcanzó su límite de ${MAX_EQUIPOS_POR_USUARIO} equipos.`);
+        if (empPinInput) empPinInput.value = '';
+        return;
+      }
+
       const huellaOk = await validarHuellaColaborador(empObj);
       if (!huellaOk) {
         if (empPinInput) empPinInput.value = '';
@@ -1712,10 +1712,27 @@
       sincronizarColaOffline();
     }
 
+    function cambiarDeColaboradorConCandado() {
+      if (confirm('¿Deseas salir del perfil actual para que otro colaborador ingrese con su clave, PIN y huella?')) {
+        isCompanyLoggedIn = false;
+        activeLoggedInEmp = null;
+        selectedEmployeeId = '';
+        selectedEventType = '';
+        const pinIn = document.getElementById('employee-pin-input');
+        if (pinIn) pinIn.value = '';
+        document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50'));
+        onSelectEmployee();
+        document.getElementById('company-login-overlay').classList.remove('hidden');
+        showToast('Cambio de Perfil', 'Ingresa con las credenciales y huella del siguiente colaborador.', 'info');
+      }
+    }
+
     function cerrarSesionEmpresa() {
       if (confirm('¿Deseas cerrar la sesión de la empresa y bloquear la aplicación?')) {
         isCompanyLoggedIn = false;
         activeLoggedInEmp = null;
+        selectedEmployeeId = '';
+        selectedEventType = '';
         isAdminActive = false;
         adminUidVerificado = null;
         document.getElementById('admin-section').classList.add('hidden');
@@ -2465,6 +2482,9 @@
     });
 
     function onSelectEmployee(conservarPin = false) {
+      if (isCompanyLoggedIn && activeLoggedInEmp) {
+        selectedEmployeeId = activeLoggedInEmp.id;
+      }
       const card = document.getElementById('employee-card');
       const pinContainer = document.getElementById('pin-input-container');
       const pinInput = document.getElementById('employee-pin-input');
@@ -2735,33 +2755,97 @@
       return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, derToRaw(new Uint8Array(r.signature)), signed);
     }
 
+    function obtenerCredencialEquipo(emp) {
+      if (!emp) return null;
+      if (emp.credPorEquipo && emp.credPorEquipo[currentDeviceToken]) {
+        return emp.credPorEquipo[currentDeviceToken];
+      }
+      if (emp.credId && emp.credPubKey && (!emp.credDeviceToken || emp.credDeviceToken === currentDeviceToken)) {
+        return { credId: emp.credId, credPubKey: emp.credPubKey, credAlg: emp.credAlg };
+      }
+      return null;
+    }
+
+    async function verificarHuellaConCred(cred) {
+      const challenge = crypto.getRandomValues(new Uint8Array(32));
+      const assertion = await navigator.credentials.get({
+        publicKey: {
+          challenge,
+          rpId: location.hostname,
+          allowCredentials: [{ type: 'public-key', id: b64uDecode(cred.credId), transports: ['internal'] }],
+          userVerification: 'required',
+          timeout: 60000
+        }
+      });
+
+      const r = assertion.response;
+      if (b64uEncode(assertion.rawId) !== cred.credId) return false;
+
+      const clientData = JSON.parse(new TextDecoder().decode(r.clientDataJSON));
+      if (clientData.type !== 'webauthn.get') return false;
+      if (clientData.challenge !== b64uEncode(challenge)) return false;
+      if (clientData.origin !== location.origin) return false;
+
+      const authData = new Uint8Array(r.authenticatorData);
+      if (!(authData[32] & 0x04)) return false;
+
+      const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', r.clientDataJSON));
+      const signed = new Uint8Array(authData.length + 32);
+      signed.set(authData, 0);
+      signed.set(hash, authData.length);
+
+      const spki = b64uDecode(cred.credPubKey);
+      if (cred.credAlg === -257) {
+        const key = await crypto.subtle.importKey('spki', spki, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+        return crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, r.signature, signed);
+      }
+      const key = await crypto.subtle.importKey('spki', spki, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+      return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, derToRaw(new Uint8Array(r.signature)), signed);
+    }
+
     async function validarHuellaColaborador(emp) {
       if (!(await biometriaDisponible())) {
         return true;
       }
 
       try {
-        if (emp.credId && emp.credPubKey) {
-          const ok = await verificarHuella(emp);
+        const credEquipo = obtenerCredencialEquipo(emp);
+        if (credEquipo && credEquipo.credId && credEquipo.credPubKey) {
+          const ok = await verificarHuellaConCred(credEquipo);
           if (!ok) {
-            showToast('Huella No Válida', 'No se pudo verificar tu identidad. Intenta de nuevo.', 'error');
+            showToast('Huella No Válida', 'La huella no coincide con la registrada para este colaborador.', 'error');
             return false;
           }
           return true;
         }
 
         if (!navigator.onLine) {
-          return true;
+          showToast('Huella no vinculada en este equipo', 'Conéctate a internet la primera vez para registrar tu huella en este dispositivo.', 'error');
+          return false;
         }
 
-        showToast('Vincula tu huella', 'Coloca tu dedo en el sensor para vincularla a este equipo.', 'info');
+        showToast('Vincula tu huella', 'Coloca tu dedo en el sensor para vincular tu huella exclusivamente a tu perfil en este equipo.', 'info');
         const datos = await enrolarHuella(emp);
-        Object.assign(emp, datos);
+        const mapaPorEquipo = Object.assign({}, emp.credPorEquipo || {});
+        mapaPorEquipo[currentDeviceToken] = datos;
+
+        emp.credPorEquipo = mapaPorEquipo;
+        emp.credId = datos.credId;
+        emp.credPubKey = datos.credPubKey;
+        emp.credAlg = datos.credAlg;
+        emp.credDeviceToken = currentDeviceToken;
+
         localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
         if (employeesRef) {
-          employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update(datos).catch(() => {});
+          await employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update({
+            credPorEquipo: mapaPorEquipo,
+            credId: datos.credId,
+            credPubKey: datos.credPubKey,
+            credAlg: datos.credAlg,
+            credDeviceToken: currentDeviceToken
+          });
         }
-        showToast('Huella vinculada', 'Tu huella quedó ligada a este equipo.', 'success');
+        showToast('Huella vinculada', 'Tu huella quedó ligada exclusivamente a tu perfil en este equipo.', 'success');
         return true;
       } catch (err) {
         console.warn('Error biometría:', err);
@@ -3080,12 +3164,27 @@
     }
 
     async function registrarAsistenciaInterno() {
+      if (!isCompanyLoggedIn || !activeLoggedInEmp) {
+        showToast('Sesión requerida', 'Debes iniciar sesión con tu perfil y huella primero.', 'error');
+        document.getElementById('company-login-overlay')?.classList.remove('hidden');
+        checkCanSubmit();
+        return;
+      }
+
+      if (selectedEmployeeId !== activeLoggedInEmp.id) {
+        selectedEmployeeId = activeLoggedInEmp.id;
+        onSelectEmployee(true);
+        showToast('Perfil bloqueado', 'Solo puedes registrar marcajes para el colaborador que inició sesión.', 'error');
+        checkCanSubmit();
+        return;
+      }
+
       if (!selectedEmployeeId || !selectedEventType) return;
 
       const btnSubmit = document.getElementById('btn-submit-checkin');
       if (btnSubmit) btnSubmit.disabled = true;
 
-      const emp = empleados.find(e => e.id === selectedEmployeeId);
+      const emp = empleados.find(e => e.id === activeLoggedInEmp.id);
       if (!emp) {
         checkCanSubmit();
         return;
@@ -3103,6 +3202,13 @@
 
       if (emp.pin && pinVal !== emp.pin) {
         showToast('PIN Incorrecto', 'El PIN de empleado ingresado no coincide.', 'error');
+        document.getElementById('employee-pin-input').value = '';
+        checkCanSubmit();
+        return;
+      }
+
+      const huellaMarcajeOk = await validarHuellaColaborador(emp);
+      if (!huellaMarcajeOk) {
         document.getElementById('employee-pin-input').value = '';
         checkCanSubmit();
         return;
@@ -3243,11 +3349,9 @@
         mostrarModalMotivacion(selectedEventType, emp);
 
         selectedEventType = '';
-        selectedEmployeeId = '';
+        selectedEmployeeId = activeLoggedInEmp ? activeLoggedInEmp.id : '';
 
-        document.getElementById('employee-search-input').value = '';
         document.getElementById('employee-pin-input').value = '';
-        document.getElementById('pin-input-container').classList.add('hidden');
         document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50'));
         
         renderEmployeeSelect();
@@ -3299,10 +3403,8 @@
           mostrarModalMotivacion(selectedEventType, emp);
 
           selectedEventType = '';
-          selectedEmployeeId = '';
-          document.getElementById('employee-search-input').value = '';
+          selectedEmployeeId = activeLoggedInEmp ? activeLoggedInEmp.id : '';
           document.getElementById('employee-pin-input').value = '';
-          document.getElementById('pin-input-container').classList.add('hidden');
           document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50'));
 
           renderEmployeeSelect();
@@ -3916,9 +4018,11 @@
         photo: photo || (existingEmp ? existingEmp.photo || null : null),
         registeredDeviceTokens: equiposPrevios,
         registeredDeviceToken: equiposPrevios[0] || null,
+        credPorEquipo: existingEmp ? (existingEmp.credPorEquipo || null) : null,
         credId: existingEmp ? (existingEmp.credId || null) : null,
         credPubKey: existingEmp ? (existingEmp.credPubKey || null) : null,
         credAlg: existingEmp ? (existingEmp.credAlg || null) : null,
+        credDeviceToken: existingEmp ? (existingEmp.credDeviceToken || null) : null,
         turnoNombre: existingEmp ? (existingEmp.turnoNombre || null) : null,
         turnoEntrada: existingEmp ? (existingEmp.turnoEntrada || null) : null,
         turnoSalida: existingEmp ? (existingEmp.turnoSalida || null) : null,
@@ -4049,18 +4153,22 @@
         if (emp) {
           emp.registeredDeviceTokens = [];
           emp.registeredDeviceToken = null;
+          emp.credPorEquipo = null;
           emp.credId = null;
           emp.credPubKey = null;
           emp.credAlg = null;
+          emp.credDeviceToken = null;
 
           localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
           if (employeesRef) {
             employeesRef.child(emp._key || empId.replace(/[^a-zA-Z0-9]/g, '_')).update({
               registeredDeviceTokens: null,
               registeredDeviceToken: null,
+              credPorEquipo: null,
               credId: null,
               credPubKey: null,
-              credAlg: null
+              credAlg: null,
+              credDeviceToken: null
             });
           }
           renderEmployeesTable();
