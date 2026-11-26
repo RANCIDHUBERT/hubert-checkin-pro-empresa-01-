@@ -113,84 +113,55 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Inter', sans-serif;
       user-select: none;
-      background-color: #09090b;
-      background-image:
-        radial-gradient(circle at 12% 18%, rgba(250, 204, 21, 0.14), transparent 36%),
-        repeating-linear-gradient(
-          -45deg,
-          rgba(255, 255, 255, 0.018) 0px,
-          rgba(255, 255, 255, 0.018) 2px,
-          transparent 2px,
-          transparent 8px
-        );
-    }
-    .gold-accent-bar {
-      position: relative;
-    }
-    .gold-accent-bar::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 10px;
-      bottom: 10px;
-      width: 5px;
-      border-radius: 0 999px 999px 0;
-      background: linear-gradient(180deg, #facc15 0%, #eab308 100%);
-      box-shadow: 2px 0 12px rgba(250, 204, 21, 0.35);
-    }
-    .medallion-badge {
-      background: radial-gradient(circle at 30% 25%, #27272a 0%, #09090b 75%);
-      border: 3px solid #facc15;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #18181b;
+      background: #f1f5f9;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #facc15;
+      background: #cbd5e1;
       border-radius: 4px;
     }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
   <!-- NOTIFICACIÓN TOAST -->
-  <div id="toast" class="fixed top-5 right-5 z-[60] transform translate-x-full opacity-0 transition-all duration-300 ease-out flex items-center gap-3 bg-zinc-900 border border-yellow-400/30 border-l-4 border-l-yellow-400 text-white px-5 py-4 rounded-2xl shadow-[0_18px_38px_rgba(0,0,0,0.85)]">
-    <i id="toast-icon" data-lucide="check-circle" class="w-6 h-6 text-yellow-400"></i>
+  <div id="toast" class="fixed top-5 right-5 z-[60] transform translate-x-full opacity-0 transition-all duration-300 ease-out flex items-center gap-3 bg-slate-800 border-l-4 border-emerald-500 text-white px-5 py-4 rounded-xl shadow-2xl">
+    <i id="toast-icon" data-lucide="check-circle" class="w-6 h-6 text-emerald-400"></i>
     <div>
       <h4 id="toast-title" class="font-bold text-sm">Operación exitosa</h4>
-      <p id="toast-msg" class="text-xs text-zinc-300">El registro se completó correctamente.</p>
+      <p id="toast-msg" class="text-xs text-slate-300">El registro se completó correctamente.</p>
     </div>
   </div>
 
   <!-- VENTANA EMERGENTE (MODAL) DE MENSAJES OPTIMISTAS / DESCANSO -->
-  <div id="motivation-modal" class="fixed inset-0 z-[70] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 transition-all">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 max-w-lg w-full shadow-[0_24px_55px_rgba(0,0,0,0.9)] flex flex-col gap-6 text-center border-t-8 border-t-yellow-400 transform scale-95 transition-transform duration-300" id="motivation-modal-box">
+  <div id="motivation-modal" class="fixed inset-0 z-[70] bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4 transition-all">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-3xl p-8 max-w-lg w-full shadow-2xl flex flex-col gap-6 text-center border-t-8 border-t-emerald-500 transform scale-95 transition-transform duration-300" id="motivation-modal-box">
       
-      <div id="modal-icon-bg" class="mx-auto p-5 medallion-badge text-yellow-400 rounded-full w-fit">
+      <div id="modal-icon-bg" class="mx-auto p-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl w-fit">
         <i id="modal-icon" data-lucide="sparkles" class="w-12 h-12"></i>
       </div>
 
       <div class="space-y-2">
         <h3 id="modal-title" class="text-2xl font-black text-white tracking-tight">¡Excelente Trabajo!</h3>
-        <p id="modal-subtitle" class="text-xs font-bold uppercase tracking-wider text-yellow-400">Mensaje de Optimismo</p>
+        <p id="modal-subtitle" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Mensaje de Optimismo</p>
       </div>
 
-      <div class="bg-zinc-950/90 border border-zinc-800 rounded-2xl p-6 shadow-inner text-zinc-200">
+      <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-6 shadow-inner text-slate-200">
         <p id="modal-message" class="text-base font-medium leading-relaxed italic">
           "Cada día es una nueva oportunidad para demostrar de lo que eres capaz. ¡Que tengas una excelente jornada laboral!"
         </p>
       </div>
 
-      <button onclick="cerrarModalMotivacion()" class="w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black rounded-xl shadow-[0_8px_20px_rgba(250,204,21,0.25)] transition active:scale-95 flex items-center justify-center gap-2 text-sm">
+      <button onclick="cerrarModalMotivacion()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-sm">
         <i data-lucide="check" class="w-4 h-4"></i>
         <span>Aceptar y Continuar</span>
       </button>
@@ -199,51 +170,51 @@
   </div>
 
   <!-- PANTALLA DE LOGIN GENERAL CON DOBLE VERIFICACIÓN (EMPRESA + COLABORADOR) -->
-  <div id="company-login-overlay" class="fixed inset-0 z-50 bg-zinc-950/95 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 max-w-md w-full shadow-[0_24px_60px_rgba(0,0,0,0.9)] flex flex-col gap-6 text-center border-t-4 border-t-yellow-400 my-auto">
+  <div id="company-login-overlay" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col gap-6 text-center border-t-4 border-t-blue-500 my-auto">
       
       <!-- CONTENEDOR DEL LOGO DE LA EMPRESA EN EL LOGIN -->
-      <div id="login-company-logo-container" class="mx-auto p-4 medallion-badge text-yellow-400 rounded-full w-fit flex items-center justify-center overflow-hidden">
+      <div id="login-company-logo-container" class="mx-auto p-4 bg-blue-600/10 border border-blue-500/20 text-blue-400 rounded-2xl w-fit flex items-center justify-center overflow-hidden">
         <i data-lucide="building-2" class="w-10 h-10"></i>
       </div>
 
       <div>
         <h2 id="login-company-display-name" class="text-2xl font-black text-white tracking-tight">HUBERT CHECKIN PRO</h2>
-        <p class="text-xs text-zinc-400 mt-1">Acceso con Clave Empresarial y PIN de Colaborador</p>
+        <p class="text-xs text-slate-400 mt-1">Acceso con Clave Empresarial y PIN de Colaborador</p>
       </div>
 
       <form onsubmit="validarLoginEmpresa(event)" class="flex flex-col gap-4 text-left">
         <div>
-          <label class="block text-xs font-extrabold text-yellow-400 uppercase tracking-wider mb-2">1. Clave de Acceso de Empresa</label>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">1. Clave de Acceso de Empresa</label>
           <div class="relative">
-            <input type="password" id="company-password-input" required placeholder="Clave de Empresa" class="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 pl-10 focus:outline-none focus:border-yellow-400 font-mono text-center text-base">
-            <i data-lucide="lock" class="w-4 h-4 text-yellow-400 absolute left-3.5 top-3.5"></i>
+            <input type="password" id="company-password-input" required placeholder="Clave de Empresa" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 pl-10 focus:outline-none focus:border-blue-500 font-mono text-center text-base">
+            <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5"></i>
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-yellow-400 uppercase tracking-wider mb-2">2. ID / Colaborador</label>
-          <select id="login-employee-select" required class="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-yellow-400 text-sm">
+          <label class="block text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">2. ID / Colaborador</label>
+          <select id="login-employee-select" required class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-sm">
             <option value="">-- Selecciona quién eres --</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-xs font-extrabold text-yellow-400 uppercase tracking-wider mb-2">3. PIN Personal del Colaborador</label>
+          <label class="block text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">3. PIN Personal del Colaborador</label>
           <div class="relative">
-            <input type="password" id="login-employee-pin-input" required maxlength="8" placeholder="****" class="w-full bg-zinc-950 border border-zinc-800 text-yellow-300 font-mono tracking-widest text-center text-lg rounded-xl px-4 py-3 pl-10 focus:outline-none focus:border-yellow-400">
-            <i data-lucide="key" class="w-4 h-4 text-yellow-400 absolute left-3.5 top-3.5"></i>
+            <input type="password" id="login-employee-pin-input" required maxlength="8" placeholder="****" class="w-full bg-slate-800 border border-slate-700 text-amber-300 font-mono tracking-widest text-center text-lg rounded-xl px-4 py-3 pl-10 focus:outline-none focus:border-amber-500">
+            <i data-lucide="key" class="w-4 h-4 text-amber-500 absolute left-3.5 top-3.5"></i>
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black rounded-xl shadow-[0_8px_20px_rgba(250,204,21,0.25)] transition active:scale-95 flex items-center justify-center gap-2 text-sm mt-2">
+        <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg transition active:scale-95 flex items-center justify-center gap-2 text-sm mt-2">
           <i data-lucide="log-in" class="w-4 h-4"></i>
           <span>Validar e Ingresar a la App</span>
         </button>
       </form>
 
-      <div class="border-t border-zinc-800 pt-3">
-        <p class="text-[11px] text-zinc-500">
+      <div class="border-t border-slate-800 pt-3">
+        <p class="text-[11px] text-slate-500">
           Acceso verificado de empresa y colaborador.
         </p>
       </div>
@@ -252,55 +223,55 @@
   </div>
 
   <!-- LOGIN DE ADMINISTRADOR (Firebase Authentication) -->
-  <div id="admin-login-modal" class="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 max-w-sm w-full shadow-[0_24px_55px_rgba(0,0,0,0.9)] flex flex-col gap-5 border-t-4 border-t-yellow-400">
+  <div id="admin-login-modal" class="fixed inset-0 z-[80] bg-slate-950/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col gap-5 border-t-4 border-t-amber-500">
       <div class="text-center">
         <h3 class="text-xl font-black text-white">Acceso de Administrador</h3>
-        <p class="text-xs text-zinc-400 mt-1">Ingresa con tu cuenta de administrador</p>
+        <p class="text-xs text-slate-400 mt-1">Ingresa con tu cuenta de administrador</p>
       </div>
       <form onsubmit="loginAdminFirebase(event)" class="flex flex-col gap-3">
-        <input type="email" id="admin-email-input" required autocomplete="username" placeholder="Correo del administrador" class="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400">
-        <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Contraseña" class="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-400">
-        <button type="submit" class="w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black rounded-xl text-sm transition active:scale-95">Entrar</button>
-        <button type="button" onclick="cerrarModalAdminLogin()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold rounded-xl text-xs transition">Cancelar</button>
+        <input type="email" id="admin-email-input" required autocomplete="username" placeholder="Correo del administrador" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+        <input type="password" id="admin-pass-input" required autocomplete="current-password" placeholder="Contraseña" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500">
+        <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl text-sm transition active:scale-95">Entrar</button>
+        <button type="button" onclick="cerrarModalAdminLogin()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition">Cancelar</button>
       </form>
     </div>
   </div>
 
   <!-- ENCABEZADO PRINCIPAL -->
-  <header class="bg-zinc-900/95 backdrop-blur border-b border-zinc-800 sticky top-0 z-30 px-6 py-4 shadow-[0_10px_30px_rgba(0,0,0,0.7)]">
+  <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-30 px-6 py-4">
     <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
       <div class="flex items-center gap-3">
         <!-- LOGO DE LA EMPRESA EN EL ENCABEZADO -->
-        <div id="header-company-logo-container" class="p-2.5 medallion-badge rounded-full flex items-center justify-center overflow-hidden">
-          <i data-lucide="cloud-lightning" class="w-7 h-7 text-yellow-400"></i>
+        <div id="header-company-logo-container" class="p-2.5 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center overflow-hidden">
+          <i data-lucide="cloud-lightning" class="w-7 h-7 text-white"></i>
         </div>
         <div>
-          <h1 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
-            <span id="header-company-title">HUBERT CHECKIN PRO</span> <span class="text-xs font-bold px-2.5 py-0.5 bg-yellow-400 text-zinc-950 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-zinc-950 animate-pulse"></span> Cloud Sync</span>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            <span id="header-company-title">HUBERT CHECKIN PRO</span> <span class="text-xs font-semibold px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Cloud Sync</span>
           </h1>
-          <p class="text-xs text-zinc-400">Control de Asistencia Multidispositivo con Registro en Excel</p>
+          <p class="text-xs text-slate-400">Control de Asistencia Multidispositivo con Registro en Excel</p>
         </div>
       </div>
 
       <!-- RELOJ Y FECHA DE INTERNET Y ESTADO DE RED -->
       <div class="flex items-center gap-4 sm:gap-6">
         <div class="text-right hidden sm:block">
-          <div id="live-clock" class="text-2xl font-black font-mono tracking-wider text-yellow-400">00:00:00 AM</div>
-          <div class="flex items-center justify-end gap-1.5 text-xs text-zinc-400">
+          <div id="live-clock" class="text-2xl font-black font-mono tracking-wider text-blue-400">00:00:00 AM</div>
+          <div class="flex items-center justify-end gap-1.5 text-xs text-slate-400">
             <span id="live-date" class="font-medium capitalize">Cargando fecha...</span>
-            <span id="network-time-badge" class="px-1.5 py-0.5 text-[10px] bg-zinc-800 border border-zinc-700 text-yellow-300 rounded-md font-mono" title="Estado de Sincronización de Hora">NTP Net</span>
+            <span id="network-time-badge" class="px-1.5 py-0.5 text-[10px] bg-slate-700 text-slate-300 rounded-md font-mono" title="Estado de Sincronización de Hora">NTP Net</span>
           </div>
         </div>
 
         <!-- BOTÓN DE MODO ADMIN -->
-        <button onclick="toggleAdminPanel()" class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 hover:text-yellow-300 rounded-xl text-sm font-semibold transition border border-zinc-700 shadow-sm active:scale-95">
-          <i data-lucide="lock" class="w-4 h-4 text-yellow-400"></i>
+        <button onclick="toggleAdminPanel()" class="flex items-center gap-2 px-4 py-2 bg-slate-700/80 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-sm font-semibold transition border border-slate-600/50 shadow-sm active:scale-95">
+          <i data-lucide="lock" class="w-4 h-4 text-amber-400"></i>
           <span id="btn-admin-text">Modo Administrador</span>
         </button>
 
         <!-- BOTÓN CERRAR SESIÓN DE EMPRESA -->
-        <button onclick="cerrarSesionEmpresa()" class="flex items-center gap-2 px-3 py-2 bg-zinc-950 hover:bg-yellow-400 text-yellow-400 hover:text-zinc-950 rounded-xl text-xs font-bold transition border border-yellow-400/40" title="Cerrar Sesión Empresa">
+        <button onclick="cerrarSesionEmpresa()" class="flex items-center gap-2 px-3 py-2 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-xl text-xs font-semibold transition border border-rose-500/30" title="Cerrar Sesión Empresa">
           <i data-lucide="power" class="w-4 h-4"></i>
         </button>
       </div>
@@ -314,150 +285,146 @@
     <section id="kiosk-section" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       
       <!-- COLUMNA IZQUIERDA: SELECCIÓN Y DATOS DE EMPLEADO -->
-      <div class="lg:col-span-5 gold-accent-bar bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-[0_16px_36px_rgba(0,0,0,0.75)] flex flex-col gap-5">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-          <h2 class="text-lg font-extrabold text-white flex items-center gap-2.5">
-            <span class="w-9 h-9 rounded-full medallion-badge flex items-center justify-center text-yellow-400">
-              <i data-lucide="user-check" class="w-4 h-4"></i>
-            </span>
+      <div class="lg:col-span-5 bg-slate-800 border border-slate-700/70 rounded-2xl p-6 shadow-xl flex flex-col gap-5">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+          <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="user-check" class="w-5 h-5 text-blue-400"></i>
             Selección de Colaborador
           </h2>
-          <span id="cloud-status-badge" class="text-xs px-2.5 py-1 bg-yellow-400/15 text-yellow-300 border border-yellow-400/30 rounded-full font-semibold flex items-center gap-1.5">
+          <span id="cloud-status-badge" class="text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full font-medium flex items-center gap-1.5">
             <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Conectado
           </span>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2">Buscar por ID o Nombre de Empleado</label>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Buscar por ID o Nombre de Empleado</label>
           <!-- COMBOBOX / BUSCADOR INTERACTIVO -->
           <div class="relative" id="employee-combobox-wrapper">
             <div class="relative flex items-center">
-              <i data-lucide="search" class="w-4 h-4 text-yellow-400 absolute left-3.5 pointer-events-none z-10"></i>
-              <input type="text" id="employee-search-input" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="filterEmployeeCombobox()" onfocus="openEmployeeCombobox()" placeholder="Escribe tu ID de empleado (o nombre)..." class="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-xl pl-10 pr-10 py-3.5 focus:outline-none focus:border-yellow-400 font-medium text-sm">
-              <button type="button" onclick="toggleEmployeeCombobox()" class="absolute right-3 p-1 text-zinc-400 hover:text-yellow-400">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none z-10"></i>
+              <input type="text" id="employee-search-input" oninput="filterEmployeeCombobox()" onfocus="openEmployeeCombobox()" placeholder="Escribe tu ID de empleado (o nombre)..." class="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-xl pl-10 pr-10 py-3.5 focus:outline-none focus:border-blue-500 font-medium text-sm">
+              <button type="button" onclick="toggleEmployeeCombobox()" class="absolute right-3 p-1 text-slate-400 hover:text-white">
                 <i data-lucide="chevron-down" class="w-5 h-5"></i>
               </button>
             </div>
 
             <!-- DESPLEGABLE CON LISTA FILTRABLE -->
-            <div id="employee-dropdown-list" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-zinc-950 border border-yellow-400/40 rounded-xl shadow-[0_20px_45px_rgba(0,0,0,0.9)] max-h-60 overflow-y-auto custom-scrollbar z-40 divide-y divide-zinc-800/80">
+            <div id="employee-dropdown-list" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-60 overflow-y-auto custom-scrollbar z-40 divide-y divide-slate-800/80">
               <!-- Carga dinámica -->
             </div>
           </div>
         </div>
 
         <!-- TARJETA DETALLE EMPLEADO -->
-        <div id="employee-card" class="bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-3 min-h-[140px] justify-center items-center text-center transition-all shadow-inner">
-          <div class="p-4 medallion-badge rounded-full text-yellow-400 mb-1">
+        <div id="employee-card" class="bg-slate-900/80 border border-slate-700/50 rounded-xl p-5 flex flex-col gap-3 min-h-[140px] justify-center items-center text-center transition-all">
+          <div class="p-4 bg-slate-800 rounded-full text-slate-600 mb-1">
             <i data-lucide="user" class="w-10 h-10"></i>
           </div>
-          <p class="text-zinc-400 text-sm">Selecciona un empleado para habilitar el registro</p>
+          <p class="text-slate-400 text-sm">Selecciona un empleado para habilitar el registro</p>
         </div>
 
         <!-- CAMPO PIN PERSONAL DEL EMPLEADO -->
-        <div id="pin-input-container" class="hidden bg-zinc-950 border border-yellow-400/40 rounded-xl p-4 flex flex-col gap-2 shadow-inner">
-          <label class="block text-xs font-extrabold text-yellow-400 uppercase tracking-wider flex items-center gap-1.5">
+        <div id="pin-input-container" class="hidden bg-slate-900/90 border border-amber-500/40 rounded-xl p-4 flex flex-col gap-2 shadow-inner">
+          <label class="block text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
             <i data-lucide="key" class="w-4 h-4"></i>
             Ingresa tu PIN Secreto de Empleado
           </label>
-          <input type="password" id="employee-pin-input" autocomplete="new-password" oninput="checkCanSubmit()" maxlength="8" placeholder="****" class="w-full bg-zinc-900 border border-zinc-700 text-yellow-300 font-mono tracking-widest text-center text-xl rounded-lg px-3 py-2.5 focus:outline-none focus:border-yellow-400">
-          <p class="text-[11px] text-zinc-400 italic text-center">Requerido para confirmar tu identidad</p>
+          <input type="password" id="employee-pin-input" oninput="checkCanSubmit()" maxlength="8" placeholder="****" class="w-full bg-slate-800 border border-slate-700 text-amber-300 font-mono tracking-widest text-center text-xl rounded-lg px-3 py-2.5 focus:outline-none focus:border-amber-500">
+          <p class="text-[11px] text-slate-400 italic text-center">Requerido para confirmar tu identidad</p>
         </div>
 
         <!-- ESTADO GPS Y DISPOSITIVO EN TIEMPO REAL -->
         <div class="flex flex-col gap-2">
-          <div id="gps-status-box" class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 text-xs text-zinc-400">
-            <i data-lucide="map-pin" class="w-4 h-4 text-yellow-400"></i>
+          <div id="gps-status-box" class="bg-slate-900/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-3 text-xs text-slate-400">
+            <i data-lucide="map-pin" class="w-4 h-4 text-slate-500"></i>
             <span id="gps-status-text">Iniciando sensor GPS...</span>
           </div>
-          <div id="device-status-box" class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 text-xs text-zinc-400">
-            <i data-lucide="smartphone" class="w-4 h-4 text-yellow-400"></i>
+          <div id="device-status-box" class="bg-slate-900/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-3 text-xs text-slate-400">
+            <i data-lucide="smartphone" class="w-4 h-4 text-blue-400"></i>
             <span id="device-token-text" class="font-mono text-[11px] truncate">ID Equipo: Obteniendo...</span>
           </div>
-          <div id="time-server-status-box" class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 text-xs text-zinc-400">
-            <i data-lucide="clock" class="w-4 h-4 text-yellow-400"></i>
+          <div id="time-server-status-box" class="bg-slate-900/40 border border-slate-700/40 rounded-xl p-3 flex items-center gap-3 text-xs text-slate-400">
+            <i data-lucide="clock" class="w-4 h-4 text-emerald-400"></i>
             <span id="time-server-text">Hora oficial: Validando red...</span>
           </div>
         </div>
       </div>
 
       <!-- COLUMNA DERECHA: BOTONES DE ACCIÓN DE CHECADO -->
-      <div class="lg:col-span-7 gold-accent-bar bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-[0_16px_36px_rgba(0,0,0,0.75)] flex flex-col gap-6">
-        <div class="border-b border-zinc-800 pb-3 flex flex-wrap justify-between items-center gap-2">
+      <div class="lg:col-span-7 bg-slate-800 border border-slate-700/70 rounded-2xl p-6 shadow-xl flex flex-col gap-6">
+        <div class="border-b border-slate-700/60 pb-3 flex flex-wrap justify-between items-center gap-2">
           <div>
-            <h2 class="text-lg font-extrabold text-white flex items-center gap-2.5">
-              <span class="w-9 h-9 rounded-full medallion-badge flex items-center justify-center text-yellow-400">
-                <i data-lucide="clock" class="w-4 h-4"></i>
-              </span>
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="clock" class="w-5 h-5 text-blue-400"></i>
               Tipo de Evento a Registrar
             </h2>
-            <p class="text-xs text-zinc-400 mt-0.5">Selecciona el tipo de marca que deseas realizar (una sola vez por día)</p>
+            <p class="text-xs text-slate-400 mt-0.5">Selecciona el tipo de marca que deseas realizar (una sola vez por día)</p>
           </div>
-          <div id="entry-schedule-badge" class="px-3 py-1 bg-zinc-950 border border-yellow-400/40 text-[11px] text-yellow-300 rounded-lg font-mono flex items-center gap-1.5">
-            <i data-lucide="alarm-clock" class="w-3.5 h-3.5 text-yellow-400"></i> Entrada: 08:00 AM (+15m tol)
+          <div id="entry-schedule-badge" class="px-2.5 py-1 bg-slate-900/90 border border-slate-700 text-[11px] text-amber-300 rounded-lg font-mono flex items-center gap-1">
+            <i data-lucide="alarm-clock" class="w-3.5 h-3.5 text-amber-400"></i> Entrada: 08:00 AM (+15m tol)
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <!-- ENTRADA -->
-          <button onclick="setEventType('Entrada')" id="btn-event-Entrada" class="event-btn p-5 rounded-2xl border-2 border-zinc-800 bg-zinc-950/80 hover:border-yellow-400/70 hover:bg-zinc-900 text-left transition shadow-[0_10px_24px_rgba(0,0,0,0.65)] flex flex-col gap-3 group relative overflow-hidden">
+          <button onclick="setEventType('Entrada')" id="btn-event-Entrada" class="event-btn p-5 rounded-2xl border-2 border-slate-700 bg-slate-900/50 hover:bg-slate-700/40 text-left transition flex flex-col gap-3 group relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="p-3 medallion-badge text-yellow-400 rounded-full group-hover:bg-yellow-400 group-hover:text-zinc-950 transition">
+              <span class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition">
                 <i data-lucide="log-in" class="w-6 h-6"></i>
               </span>
-              <span class="text-2xl font-black font-mono text-yellow-400 tracking-tight">01</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300">Jornada</span>
             </div>
             <div>
-              <h3 class="font-extrabold text-lg text-white">ENTRADA</h3>
-              <p class="text-xs text-zinc-400">Inicio de labores</p>
+              <h3 class="font-bold text-lg text-white">ENTRADA</h3>
+              <p class="text-xs text-slate-400">Inicio de labores</p>
             </div>
           </button>
 
           <!-- SALIDA COMER -->
-          <button onclick="setEventType('Salida Comer')" id="btn-event-Salida Comer" class="event-btn p-5 rounded-2xl border-2 border-zinc-800 bg-zinc-950/80 hover:border-yellow-400/70 hover:bg-zinc-900 text-left transition shadow-[0_10px_24px_rgba(0,0,0,0.65)] flex flex-col gap-3 group relative overflow-hidden">
+          <button onclick="setEventType('Salida Comer')" id="btn-event-Salida Comer" class="event-btn p-5 rounded-2xl border-2 border-slate-700 bg-slate-900/50 hover:bg-slate-700/40 text-left transition flex flex-col gap-3 group relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="p-3 medallion-badge text-yellow-400 rounded-full group-hover:bg-yellow-400 group-hover:text-zinc-950 transition">
+              <span class="p-3 bg-amber-500/10 text-amber-400 rounded-xl group-hover:bg-amber-500 group-hover:text-white transition">
                 <i data-lucide="utensils" class="w-6 h-6"></i>
               </span>
-              <span class="text-2xl font-black font-mono text-yellow-400 tracking-tight">02</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300">Receso</span>
             </div>
             <div>
-              <h3 class="font-extrabold text-lg text-white">SALIDA COMER</h3>
-              <p class="text-xs text-zinc-400">Inicio de alimentos</p>
+              <h3 class="font-bold text-lg text-white">SALIDA COMER</h3>
+              <p class="text-xs text-slate-400">Inicio de alimentos</p>
             </div>
           </button>
 
           <!-- REGRESO COMER -->
-          <button onclick="setEventType('Regreso Comer')" id="btn-event-Regreso Comer" class="event-btn p-5 rounded-2xl border-2 border-zinc-800 bg-zinc-950/80 hover:border-yellow-400/70 hover:bg-zinc-900 text-left transition shadow-[0_10px_24px_rgba(0,0,0,0.65)] flex flex-col gap-3 group relative overflow-hidden">
+          <button onclick="setEventType('Regreso Comer')" id="btn-event-Regreso Comer" class="event-btn p-5 rounded-2xl border-2 border-slate-700 bg-slate-900/50 hover:bg-slate-700/40 text-left transition flex flex-col gap-3 group relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="p-3 medallion-badge text-yellow-400 rounded-full group-hover:bg-yellow-400 group-hover:text-zinc-950 transition">
+              <span class="p-3 bg-blue-500/10 text-blue-400 rounded-xl group-hover:bg-blue-500 group-hover:text-white transition">
                 <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
               </span>
-              <span class="text-2xl font-black font-mono text-yellow-400 tracking-tight">03</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300">Receso</span>
             </div>
             <div>
-              <h3 class="font-extrabold text-lg text-white">REGRESO COMER</h3>
-              <p class="text-xs text-zinc-400">Retorno a labores</p>
+              <h3 class="font-bold text-lg text-white">REGRESO COMER</h3>
+              <p class="text-xs text-slate-400">Retorno a labores</p>
             </div>
           </button>
 
           <!-- SALIDA -->
-          <button onclick="setEventType('Salida')" id="btn-event-Salida" class="event-btn p-5 rounded-2xl border-2 border-zinc-800 bg-zinc-950/80 hover:border-yellow-400/70 hover:bg-zinc-900 text-left transition shadow-[0_10px_24px_rgba(0,0,0,0.65)] flex flex-col gap-3 group relative overflow-hidden">
+          <button onclick="setEventType('Salida')" id="btn-event-Salida" class="event-btn p-5 rounded-2xl border-2 border-slate-700 bg-slate-900/50 hover:bg-slate-700/40 text-left transition flex flex-col gap-3 group relative overflow-hidden">
             <div class="flex items-center justify-between">
-              <span class="p-3 medallion-badge text-yellow-400 rounded-full group-hover:bg-yellow-400 group-hover:text-zinc-950 transition">
+              <span class="p-3 bg-rose-500/10 text-rose-400 rounded-xl group-hover:bg-rose-500 group-hover:text-white transition">
                 <i data-lucide="log-out" class="w-6 h-6"></i>
               </span>
-              <span class="text-2xl font-black font-mono text-yellow-400 tracking-tight">04</span>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300">Jornada</span>
             </div>
             <div>
-              <h3 class="font-extrabold text-lg text-white">SALIDA</h3>
-              <p class="text-xs text-zinc-400">Fin de turno</p>
+              <h3 class="font-bold text-lg text-white">SALIDA</h3>
+              <p class="text-xs text-slate-400">Fin de turno</p>
             </div>
           </button>
         </div>
 
         <!-- BOTÓN CONFIRMAR MARCAJE -->
-        <button id="btn-submit-checkin" onclick="registrarAsistencia()" disabled class="w-full py-4 bg-zinc-800 text-zinc-500 cursor-not-allowed font-black text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-3">
+        <button id="btn-submit-checkin" onclick="registrarAsistencia()" disabled class="w-full py-4 bg-slate-700 text-slate-400 cursor-not-allowed font-bold text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-3">
           <i data-lucide="check-square" class="w-6 h-6"></i>
           <span>REGISTRAR MARCAJE</span>
         </button>
@@ -465,41 +432,39 @@
     </section>
 
     <!-- SECCIÓN ADMINISTRATIVA (PROTEGIDA POR PIN ADMIN) -->
-    <section id="admin-section" class="hidden gold-accent-bar bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.85)] flex flex-col gap-6">
-      <div class="flex flex-wrap items-center justify-between border-b border-zinc-800 pb-4 gap-4">
+    <section id="admin-section" class="hidden bg-slate-800 border border-slate-700/70 rounded-2xl p-6 shadow-2xl flex flex-col gap-6">
+      <div class="flex flex-wrap items-center justify-between border-b border-slate-700/60 pb-4 gap-4">
         <div>
-          <h2 class="text-xl font-black text-white flex items-center gap-2.5">
-            <span class="w-9 h-9 rounded-full medallion-badge flex items-center justify-center text-yellow-400">
-              <i data-lucide="settings" class="w-5 h-5"></i>
-            </span>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i data-lucide="settings" class="w-6 h-6 text-amber-400"></i>
             Panel de Administración & Control
           </h2>
-          <p class="text-xs text-zinc-400">Gestión de personal, turnos rotativos, vacaciones, incidencias, equipos vinculados y prenómina</p>
+          <p class="text-xs text-slate-400">Gestión de personal, turnos rotativos, vacaciones, incidencias, equipos vinculados y prenómina</p>
         </div>
 
         <!-- NAVEGACIÓN PESTAÑAS ADMIN -->
-        <div class="flex flex-wrap items-center gap-2 bg-zinc-950 p-1.5 rounded-xl border border-zinc-800">
-          <button onclick="showAdminTab('history')" id="tab-btn-history" class="px-4 py-2 text-xs font-extrabold rounded-lg bg-yellow-400 text-zinc-950 transition">Historial (Sincronizado)</button>
-          <button onclick="showAdminTab('hours')" id="tab-btn-hours" class="px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-yellow-400"></i> Horas / Estándar</button>
-          <button onclick="showAdminTab('faltas')" id="tab-btn-faltas" class="px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition flex items-center gap-1.5"><i data-lucide="user-x" class="w-3.5 h-3.5 text-yellow-400"></i> Incidencias y Vacaciones</button>
-          <button onclick="showAdminTab('turnos')" id="tab-btn-turnos" class="px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-yellow-400"></i> Turnos Rotativos</button>
-          <button onclick="showAdminTab('employees')" id="tab-btn-employees" class="px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition">Colaboradores</button>
-          <button onclick="showAdminTab('config')" id="tab-btn-config" class="px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition">Configuración Nube</button>
+        <div class="flex flex-wrap items-center gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-700">
+          <button onclick="showAdminTab('history')" id="tab-btn-history" class="px-4 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition">Historial (Sincronizado)</button>
+          <button onclick="showAdminTab('hours')" id="tab-btn-hours" class="px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-amber-400"></i> Horas / Estándar</button>
+          <button onclick="showAdminTab('faltas')" id="tab-btn-faltas" class="px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5"><i data-lucide="user-x" class="w-3.5 h-3.5 text-rose-400"></i> Incidencias y Vacaciones</button>
+          <button onclick="showAdminTab('turnos')" id="tab-btn-turnos" class="px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-400"></i> Turnos Rotativos</button>
+          <button onclick="showAdminTab('employees')" id="tab-btn-employees" class="px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">Colaboradores</button>
+          <button onclick="showAdminTab('config')" id="tab-btn-config" class="px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">Configuración Nube</button>
         </div>
       </div>
 
       <!-- AVISO DE CUMPLEAÑOS (visible en todas las pestañas del panel) -->
-      <div id="birthday-banner" class="hidden bg-yellow-400/10 border border-yellow-400/35 rounded-xl p-4"></div>
+      <div id="birthday-banner" class="hidden bg-pink-500/10 border border-pink-500/30 rounded-xl p-4"></div>
 
       <!-- TAB 1: HISTORIAL DE REGISTROS CON MAPA GPS, RETARDOS, FALTAS Y VACACIONES -->
       <div id="admin-tab-history" class="flex flex-col gap-4">
-        <div class="flex flex-wrap items-center justify-between gap-4 bg-zinc-950/80 p-4 rounded-xl border border-zinc-800">
+        <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
           <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
             <div class="relative flex-1 sm:w-64">
-              <input type="text" id="search-history" oninput="renderHistoryTable()" placeholder="Buscar colaborador..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-yellow-400">
+              <input type="text" id="search-history" oninput="renderHistoryTable()" placeholder="Buscar colaborador..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
             </div>
-            <input type="date" id="filter-date" onchange="renderHistoryTable()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-yellow-400">
-            <select id="filter-event-type" onchange="renderHistoryTable()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-yellow-400">
+            <input type="date" id="filter-date" onchange="renderHistoryTable()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+            <select id="filter-event-type" onchange="renderHistoryTable()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
               <option value="">Todos los eventos</option>
               <option value="Entrada">Entrada</option>
               <option value="Salida Comer">Salida Comer</option>
@@ -511,20 +476,20 @@
               <option value="Incapacidad">Incapacidad</option>
               <option value="Permiso">Permiso</option>
             </select>
-            <button onclick="limpiarFiltrosHistorial()" class="text-xs text-zinc-400 hover:text-yellow-300 underline">Limpiar filtros</button>
+            <button onclick="limpiarFiltrosHistorial()" class="text-xs text-slate-400 hover:text-white underline">Limpiar filtros</button>
           </div>
 
           <!-- BOTONES DE EXPORTACIÓN A EXCEL Y LAYOUT DE NÓMINA -->
           <div class="flex flex-wrap items-center gap-2">
-            <button id="btn-refresh-admin" onclick="refrescarInformacionAdmin()" class="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-yellow-300 border border-yellow-400/30 px-4 py-2 rounded-lg text-xs font-bold transition shadow-md" title="Vuelve a cargar los datos de la nube sin salir del modo administrador">
+            <button id="btn-refresh-admin" onclick="refrescarInformacionAdmin()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition shadow-md" title="Vuelve a cargar los datos de la nube sin salir del modo administrador">
               <i data-lucide="refresh-cw" class="w-4 h-4"></i>
               <span id="txt-refresh-admin">Actualizar datos</span>
             </button>
-            <button onclick="exportToExcel()" class="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 px-4 py-2 rounded-lg text-xs font-black transition shadow-md">
+            <button onclick="exportToExcel()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition shadow-md">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span>Descargar Excel (.xlsx)</span>
             </button>
-            <button onclick="exportarLayoutNominaCSV()" class="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 px-4 py-2 rounded-lg text-xs font-black transition shadow-md" title="Archivo CSV plano listo para importar a CONTPAQi / NOI">
+            <button onclick="exportarLayoutNominaCSV()" class="flex items-center gap-2 bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition shadow-md" title="Archivo CSV plano listo para importar a CONTPAQi / NOI">
               <i data-lucide="database" class="w-4 h-4"></i>
               <span>Layout Nómina (.csv)</span>
             </button>
@@ -532,9 +497,9 @@
         </div>
 
         <!-- TABLA DE MARCAJES CON UBICACIÓN GPS, HORAS Y ESTATUS DE TOLERANCIA / RETARDO -->
-        <div class="overflow-x-auto rounded-xl border border-zinc-800 custom-scrollbar">
-          <table class="w-full text-left text-xs text-zinc-300">
-            <thead class="bg-zinc-950 text-yellow-400 uppercase font-bold border-b border-zinc-800">
+        <div class="overflow-x-auto rounded-xl border border-slate-700/60 custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-700/60">
               <tr>
                 <th class="p-3.5">ID / Colaborador</th>
                 <th class="p-3.5">Departamento</th>
@@ -547,7 +512,7 @@
                 <th class="p-3.5 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody id="history-table-body" class="divide-y divide-zinc-800/70 bg-zinc-950/50">
+            <tbody id="history-table-body" class="divide-y divide-slate-700/40 bg-slate-800/40">
               <!-- Carga dinámica -->
             </tbody>
           </table>
@@ -556,40 +521,40 @@
 
       <!-- TAB 2: RESUMEN DE HORAS TRABAJADAS, RETARDOS, FALTAS Y VACACIONES -->
       <div id="admin-tab-hours" class="hidden flex flex-col gap-4">
-        <div class="bg-zinc-950/80 p-4 rounded-xl border border-zinc-800 flex flex-wrap justify-between items-center gap-4">
+        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 flex flex-wrap justify-between items-center gap-4">
           <div>
-            <h3 class="font-bold text-sm text-white flex items-center gap-2">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-yellow-400"></i>
+            <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-amber-400"></i>
               Resumen Acumulado de Horas, Retardos, Faltas y Vacaciones
             </h3>
-            <p class="text-xs text-zinc-400 mt-0.5">Calculado automáticamente con tolerancia de horarios por turno y registro de incidencias.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Calculado automáticamente con tolerancia de horarios por turno y registro de incidencias.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <button onclick="renderHoursTable()" class="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-yellow-400"></i> Actualizar Totales
+            <button onclick="renderHoursTable()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Actualizar Totales
             </button>
-            <button onclick="exportarLayoutNominaCSV()" class="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 rounded-lg text-xs font-black flex items-center gap-1.5 transition">
+            <button onclick="exportarLayoutNominaCSV()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
               <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Exportar Prenómina (.csv)
             </button>
           </div>
         </div>
 
-        <div class="overflow-x-auto rounded-xl border border-zinc-800 custom-scrollbar">
-          <table class="w-full text-left text-xs text-zinc-300">
-            <thead class="bg-zinc-950 text-yellow-400 uppercase font-bold border-b border-zinc-800">
+        <div class="overflow-x-auto rounded-xl border border-slate-700/60 custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-700/60">
               <tr>
                 <th class="p-3.5">ID / Colaborador</th>
                 <th class="p-3.5">Turno / Depto</th>
                 <th class="p-3.5 text-center">Estatus Actual</th>
-                <th class="p-3.5 text-center bg-yellow-400/10">Hoy (Día)</th>
-                <th class="p-3.5 text-center bg-yellow-400/10">Esta Semana</th>
-                <th class="p-3.5 text-center bg-yellow-400/10">Este Mes</th>
-                <th class="p-3.5 text-center bg-rose-950/30 text-rose-300">Retardos</th>
+                <th class="p-3.5 text-center bg-blue-900/20">Hoy (Día)</th>
+                <th class="p-3.5 text-center bg-emerald-900/20">Esta Semana</th>
+                <th class="p-3.5 text-center bg-amber-900/20">Este Mes</th>
+                <th class="p-3.5 text-center bg-rose-900/20 text-rose-300">Retardos</th>
                 <th class="p-3.5 text-center bg-red-950/40 text-red-400">Faltas</th>
-                <th class="p-3.5 text-center bg-zinc-900 text-yellow-300">Vacaciones / Incap.</th>
+                <th class="p-3.5 text-center bg-sky-900/20 text-sky-300">Vacaciones / Incap.</th>
               </tr>
             </thead>
-            <tbody id="hours-table-body" class="divide-y divide-zinc-800/70 bg-zinc-950/50">
+            <tbody id="hours-table-body" class="divide-y divide-slate-700/40 bg-slate-800/40">
               <!-- Carga dinámica -->
             </tbody>
           </table>
@@ -598,24 +563,24 @@
 
       <!-- TAB 3: REGISTRO DE INCIDENCIAS, FALTAS, VACACIONES E INCAPACIDADES -->
       <div id="admin-tab-faltas" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-zinc-950/90 border border-yellow-400/30 rounded-xl p-5 flex flex-col gap-4 shadow-xl">
-          <h3 class="font-bold text-sm text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
-            <i data-lucide="user-x" class="w-5 h-5 text-yellow-400"></i>
+        <div class="lg:col-span-5 bg-slate-900/60 border border-rose-500/30 rounded-xl p-5 flex flex-col gap-4 shadow-xl">
+          <h3 class="font-bold text-sm text-rose-400 flex items-center gap-2 border-b border-slate-700 pb-3">
+            <i data-lucide="user-x" class="w-5 h-5 text-rose-400"></i>
             Módulo de Incidencias, Faltas y Vacaciones
           </h3>
-          <p class="text-xs text-zinc-400">Registra faltas, periodos vacacionales, incapacidades o permisos. Se reflejan en el historial, resumen acumulado y exportación a nómina.</p>
+          <p class="text-xs text-slate-400">Registra faltas, periodos vacacionales, incapacidades o permisos. Se reflejan en el historial, resumen acumulado y exportación a nómina.</p>
 
           <form onsubmit="registrarFaltaManual(event)" class="flex flex-col gap-3">
             <div>
-              <label class="block text-xs font-semibold text-zinc-300 mb-1">Seleccionar Colaborador</label>
-              <select id="falta-employee-select" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Seleccionar Colaborador</label>
+              <select id="falta-employee-select" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
                 <option value="">-- Seleccione un colaborador --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-zinc-300 mb-1">Tipo de Movimiento / Incidencia</label>
-              <select id="falta-type-select" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Tipo de Movimiento / Incidencia</label>
+              <select id="falta-type-select" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
                 <option value="Falta Injustificada">Falta Injustificada (Sin goce)</option>
                 <option value="Falta Justificada">Falta Justificada (Con goce)</option>
                 <option value="Vacaciones">Vacaciones (Con goce)</option>
@@ -626,33 +591,33 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Fecha Inicio</label>
-                <input type="date" id="falta-date-input" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Fecha Inicio</label>
+                <input type="date" id="falta-date-input" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Fecha Fin (Rango)</label>
-                <input type="date" id="falta-date-end-input" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400" title="Opcional: deja igual o vacío para un solo día">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Fecha Fin (Rango)</label>
+                <input type="date" id="falta-date-end-input" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500" title="Opcional: deja igual o vacío para un solo día">
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-zinc-300 mb-1">Observaciones / Folio (Opcional)</label>
-              <input type="text" id="falta-reason-input" placeholder="Ej. Folio IMSS, periodo vacacional o motivo" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Observaciones / Folio (Opcional)</label>
+              <input type="text" id="falta-reason-input" placeholder="Ej. Folio IMSS, periodo vacacional o motivo" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
             </div>
 
-            <button type="submit" class="mt-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-lg">
+            <button type="submit" class="mt-2 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-lg">
               <i data-lucide="alert-circle" class="w-4 h-4"></i>
               Guardar y Registrar Movimiento
             </button>
           </form>
         </div>
 
-        <div class="lg:col-span-7 bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-3">
-          <h4 class="font-bold text-xs uppercase tracking-wider text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-2">
-            <i data-lucide="info" class="w-4 h-4 text-yellow-400"></i>
+        <div class="lg:col-span-7 bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-3">
+          <h4 class="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2 border-b border-slate-700/60 pb-2">
+            <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
             Control de Incidencias, Vacaciones y Prenómina
           </h4>
-          <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+          <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside">
             <li><strong>Rango de fechas:</strong> Si seleccionas una <em>Fecha Inicio</em> y <em>Fecha Fin</em> (por ejemplo en Vacaciones o Incapacidades), el sistema genera automáticamente un registro por cada día del periodo.</li>
             <li><strong>Con goce vs. Descuento:</strong> Las <em>Vacaciones</em> y <em>Faltas Justificadas</em> se marcan como movimientos con goce de sueldo; las <em>Faltas Injustificadas</em> descuentan días pagables en el Layout de Nómina.</li>
             <li><strong>Exportación directa a Nómina:</strong> Tanto el reporte <strong>Excel (.xlsx)</strong> como el <strong>Layout Nómina (.csv)</strong> incluyen columnas separadas de Días Trabajados, Retardos, Faltas, Vacaciones, Incapacidades y Días a Pagar.</li>
@@ -663,24 +628,24 @@
 
       <!-- TAB NUEVA: TURNOS ROTATIVOS POR COLABORADOR -->
       <div id="admin-tab-turnos" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-zinc-950/90 border border-yellow-400/30 rounded-xl p-5 flex flex-col gap-4 shadow-xl">
-          <h3 class="font-bold text-sm text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
-            <i data-lucide="calendar" class="w-5 h-5 text-yellow-400"></i>
+        <div class="lg:col-span-5 bg-slate-900/60 border border-sky-500/30 rounded-xl p-5 flex flex-col gap-4 shadow-xl">
+          <h3 class="font-bold text-sm text-sky-400 flex items-center gap-2 border-b border-slate-700 pb-3">
+            <i data-lucide="calendar" class="w-5 h-5 text-sky-400"></i>
             Asignar Turno Rotativo
           </h3>
-          <p class="text-xs text-zinc-400">Asigna un turno específico a cada colaborador. Su tolerancia y cálculo de retardos usarán su turno asignado (si no tiene uno, usa el horario general de la empresa).</p>
+          <p class="text-xs text-slate-400">Asigna un turno específico a cada colaborador. Su tolerancia y cálculo de retardos usarán su turno asignado (si no tiene uno, usa el horario general de la empresa).</p>
 
           <form onsubmit="guardarTurnoColaborador(event)" class="flex flex-col gap-3">
             <div>
-              <label class="block text-xs font-semibold text-zinc-300 mb-1">Seleccionar Colaborador</label>
-              <select id="turno-employee-select" onchange="precargarTurnoDeEmpleado()" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Seleccionar Colaborador</label>
+              <select id="turno-employee-select" onchange="precargarTurnoDeEmpleado()" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
                 <option value="">-- Seleccione un colaborador --</option>
               </select>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-zinc-300 mb-1">Plantilla de Turno</label>
-              <select id="turno-preset-select" onchange="aplicarPlantillaTurno()" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Plantilla de Turno</label>
+              <select id="turno-preset-select" onchange="aplicarPlantillaTurno()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500">
                 <option value="General">Horario General de la Empresa</option>
                 <option value="Matutino">Matutino (06:00 - 14:00)</option>
                 <option value="Oficina">Oficina / Administrativo (08:00 - 17:00)</option>
@@ -692,34 +657,34 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Hora Entrada</label>
-                <input type="time" id="turno-entry-input" value="08:00" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-yellow-400">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Hora Entrada</label>
+                <input type="time" id="turno-entry-input" value="08:00" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-500">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Hora Salida</label>
-                <input type="time" id="turno-exit-input" value="17:00" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-yellow-400">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Hora Salida</label>
+                <input type="time" id="turno-exit-input" value="17:00" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-500">
               </div>
               <div>
-                <label class="block text-xs font-semibold text-zinc-300 mb-1">Tolerancia (min)</label>
-                <input type="number" id="turno-tol-input" value="15" min="0" max="60" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-yellow-400">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Tolerancia (min)</label>
+                <input type="number" id="turno-tol-input" value="15" min="0" max="60" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-sky-500">
               </div>
             </div>
 
             <div class="flex gap-2 pt-2">
-              <button type="submit" class="flex-1 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-lg">
+              <button type="submit" class="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 rounded-lg text-xs transition flex items-center justify-center gap-2 shadow-lg">
                 <i data-lucide="save" class="w-4 h-4"></i>
                 Guardar Turno
               </button>
-              <button type="button" onclick="quitarTurnoIndividual()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold px-3 py-2.5 rounded-lg text-xs transition" title="Volver al horario general de la empresa">
+              <button type="button" onclick="quitarTurnoIndividual()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-3 py-2.5 rounded-lg text-xs transition" title="Volver al horario general de la empresa">
                 Usar General
               </button>
             </div>
           </form>
         </div>
 
-        <div class="lg:col-span-7 overflow-x-auto rounded-xl border border-zinc-800 custom-scrollbar">
-          <table class="w-full text-left text-xs text-zinc-300">
-            <thead class="bg-zinc-950 text-yellow-400 uppercase font-bold border-b border-zinc-800">
+        <div class="lg:col-span-7 overflow-x-auto rounded-xl border border-slate-700/60 custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-700/60">
               <tr>
                 <th class="p-3.5">ID / Colaborador</th>
                 <th class="p-3.5">Departamento</th>
@@ -728,7 +693,7 @@
                 <th class="p-3.5 text-center">Tolerancia</th>
               </tr>
             </thead>
-            <tbody id="turnos-table-body" class="divide-y divide-zinc-800/70 bg-zinc-950/50">
+            <tbody id="turnos-table-body" class="divide-y divide-slate-700/40 bg-slate-800/40">
               <!-- Carga dinámica -->
             </tbody>
           </table>
@@ -738,9 +703,9 @@
       <!-- TAB 4: CATÁLOGO DE COLABORADORES -->
       <div id="admin-tab-employees" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <div class="lg:col-span-4 bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-4">
-          <h3 id="employee-form-title" class="font-bold text-sm text-white flex items-center gap-2 border-b border-zinc-800 pb-3">
-            <i data-lucide="user-plus" class="w-4 h-4 text-yellow-400"></i>
+        <div class="lg:col-span-4 bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-4">
+          <h3 id="employee-form-title" class="font-bold text-sm text-slate-100 flex items-center gap-2 border-b border-slate-700 pb-3">
+            <i data-lucide="user-plus" class="w-4 h-4 text-blue-400"></i>
             Agregar Nuevo Colaborador
           </h3>
 
@@ -749,89 +714,89 @@
             <input type="hidden" id="emp-photo-base64" value="">
             
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">ID / N° de Empleado</label>
-              <input type="text" id="emp-id" required placeholder="Ej. EMP-01" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">ID / N° de Empleado</label>
+              <input type="text" id="emp-id" required placeholder="Ej. EMP-01" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Nombre Completo</label>
-              <input type="text" id="emp-name" required placeholder="Ej. Juan Pérez" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Nombre Completo</label>
+              <input type="text" id="emp-name" required placeholder="Ej. Juan Pérez" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Departamento</label>
-              <input type="text" id="emp-dept" required placeholder="Ej. Taller / Producción" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Departamento</label>
+              <input type="text" id="emp-dept" required placeholder="Ej. Taller / Producción" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-yellow-400 mb-1 flex items-center gap-1">
+              <label class="block text-xs font-bold text-pink-400 mb-1 flex items-center gap-1">
                 <i data-lucide="cake" class="w-3.5 h-3.5"></i>
                 Fecha de Nacimiento (para felicitar su cumpleaños)
               </label>
-              <input type="date" id="emp-birth" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <input type="date" id="emp-birth" class="w-full bg-slate-800 border border-pink-500/40 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-yellow-400 mb-1 flex items-center gap-1">
+              <label class="block text-xs font-bold text-amber-400 mb-1 flex items-center gap-1">
                 <i data-lucide="key" class="w-3.5 h-3.5"></i>
                 PIN Secreto para Checado (4-8 dígitos)
               </label>
-              <input type="password" id="emp-pin" required maxlength="8" placeholder="PIN de 4 a 8 dígitos" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-yellow-300 font-mono focus:outline-none focus:border-yellow-400">
+              <input type="password" id="emp-pin" required maxlength="8" placeholder="PIN de 4 a 8 dígitos" class="w-full bg-slate-800 border border-amber-500/40 rounded-lg px-3 py-2 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-500">
             </div>
 
             <!-- ROL ADMINISTRADOR (SIN RESTRICCIÓN DE EQUIPO ÚNICO / LAPTOP + CELULAR) -->
-            <label class="flex items-start gap-2.5 bg-zinc-900 border border-yellow-400/25 rounded-lg p-2.5 cursor-pointer select-none">
-              <input type="checkbox" id="emp-is-admin" class="mt-0.5 rounded border-zinc-600 text-yellow-400 focus:ring-yellow-400">
-              <span class="text-[11px] text-zinc-200 leading-snug">
-                <strong class="text-yellow-300">Es Administrador</strong> (permite registrar asistencia desde laptop y celular sin bloqueo de equipo único)
+            <label class="flex items-start gap-2.5 bg-slate-800/90 border border-amber-500/30 rounded-lg p-2.5 cursor-pointer select-none">
+              <input type="checkbox" id="emp-is-admin" class="mt-0.5 rounded border-slate-600 text-amber-500 focus:ring-amber-500">
+              <span class="text-[11px] text-slate-200 leading-snug">
+                <strong class="text-amber-300">Es Administrador</strong> (permite registrar asistencia desde laptop y celular sin bloqueo de equipo único)
               </span>
             </label>
 
             <!-- CAMPO SUBIR FOTOGRAFÍA DE COLABORADOR -->
             <div>
-              <label class="block text-xs font-bold text-yellow-400 mb-1 flex items-center gap-1">
+              <label class="block text-xs font-bold text-sky-400 mb-1 flex items-center gap-1">
                 <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                 Fotografía del Colaborador
               </label>
               
-              <div class="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-lg p-2.5">
-                <div id="emp-photo-preview-container" class="w-12 h-12 rounded-full medallion-badge overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  <i data-lucide="image" class="w-6 h-6 text-yellow-400"></i>
+              <div class="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-2.5">
+                <div id="emp-photo-preview-container" class="w-12 h-12 rounded-full bg-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center border border-slate-600">
+                  <i data-lucide="image" class="w-6 h-6 text-slate-500"></i>
                 </div>
                 
                 <div class="flex-1 flex flex-col gap-1">
                   <input type="file" id="emp-photo-file" accept="image/*" onchange="procesarFotoSeleccionada(event)" class="hidden">
-                  <button type="button" onclick="document.getElementById('emp-photo-file').click()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-md text-xs font-semibold border border-zinc-700 transition flex items-center gap-1.5 w-fit">
-                    <i data-lucide="upload" class="w-3.5 h-3.5 text-yellow-400"></i> Seleccionar Imagen
+                  <button type="button" onclick="document.getElementById('emp-photo-file').click()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-md text-xs font-semibold border border-slate-600 transition flex items-center gap-1.5 w-fit">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i> Seleccionar Imagen
                   </button>
                   <button type="button" id="btn-remove-photo" onclick="removerFotoSeleccionada()" class="hidden text-[11px] text-rose-400 hover:underline w-fit">
                     Eliminar foto
                   </button>
                 </div>
               </div>
-              <p class="text-[10px] text-zinc-400 mt-1">Soporta JPG, PNG o cámara en celular. Comprimida automáticamente para sincronización rápida.</p>
+              <p class="text-[10px] text-slate-400 mt-1">Soporta JPG, PNG o cámara en celular. Comprimida automáticamente para sincronización rápida.</p>
             </div>
 
             <div class="flex gap-2 pt-2">
-              <button type="submit" id="btn-save-emp" class="flex-1 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition">Guardar Colaborador</button>
-              <button type="button" id="btn-cancel-emp-edit" onclick="resetFormEmpleado()" class="hidden bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold px-3 py-2.5 rounded-lg text-xs transition">Cancelar</button>
+              <button type="submit" id="btn-save-emp" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-xs transition">Guardar Colaborador</button>
+              <button type="button" id="btn-cancel-emp-edit" onclick="resetFormEmpleado()" class="hidden bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold px-3 py-2.5 rounded-lg text-xs transition">Cancelar</button>
             </div>
           </form>
         </div>
 
-        <div class="lg:col-span-8 overflow-x-auto rounded-xl border border-zinc-800 custom-scrollbar">
-          <table class="w-full text-left text-xs text-zinc-300">
-            <thead class="bg-zinc-950 text-yellow-400 uppercase font-bold border-b border-zinc-800">
+        <div class="lg:col-span-8 overflow-x-auto rounded-xl border border-slate-700/60 custom-scrollbar">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-700/60">
               <tr>
                 <th class="p-3.5">Foto</th>
                 <th class="p-3.5">ID</th>
                 <th class="p-3.5">Nombre</th>
                 <th class="p-3.5">Departamento</th>
-                <th class="p-3.5">Equipos (Máx. 2)</th>
+                <th class="p-3.5">Equipo Único (Máx. 1)</th>
                 <th class="p-3.5 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody id="employees-table-body" class="divide-y divide-zinc-800/70 bg-zinc-950/50">
+            <tbody id="employees-table-body" class="divide-y divide-slate-700/40 bg-slate-800/40">
               <!-- Carga dinámica -->
             </tbody>
           </table>
@@ -842,105 +807,105 @@
       <div id="admin-tab-config" class="hidden flex flex-col gap-6 max-w-xl">
         
         <!-- CONFIGURACIÓN DE HORARIO Y TOLERANCIA DE ENTRADA -->
-        <div class="bg-zinc-950/90 border border-yellow-400/30 rounded-xl p-5 flex flex-col gap-4">
-          <h3 class="font-bold text-sm text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
+        <div class="bg-slate-900/60 border border-amber-500/30 rounded-xl p-5 flex flex-col gap-4">
+          <h3 class="font-bold text-sm text-amber-400 flex items-center gap-2 border-b border-slate-700 pb-3">
             <i data-lucide="clock-4" class="w-4 h-4"></i>
             Configuración de Horario de Entrada y Tolerancia
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Hora Oficial de Entrada</label>
-              <input type="time" id="cfg-entry-time" value="08:00" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400 font-mono">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Hora Oficial de Entrada</label>
+              <input type="time" id="cfg-entry-time" value="08:00" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
             </div>
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Tolerancia Permitida (Minutos)</label>
-              <input type="number" id="cfg-tolerance-min" value="15" min="0" max="60" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400 font-mono">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Tolerancia Permitida (Minutos)</label>
+              <input type="number" id="cfg-tolerance-min" value="15" min="0" max="60" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
             </div>
           </div>
-          <button onclick="guardarHorarioTolerancia()" class="bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2 rounded-lg text-xs transition self-start px-4 flex items-center gap-1.5">
+          <button onclick="guardarHorarioTolerancia()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-lg text-xs transition self-start px-4 flex items-center gap-1.5">
             <i data-lucide="save" class="w-3.5 h-3.5"></i>
             Guardar Horario y Tolerancia
           </button>
         </div>
 
         <!-- CONFIGURACIÓN DE LOGO, NOMBRE Y CLAVE DE EMPRESA -->
-        <div class="bg-zinc-950/90 border border-yellow-400/30 rounded-xl p-5 flex flex-col gap-4">
-          <h3 class="font-bold text-sm text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
+        <div class="bg-slate-900/60 border border-blue-500/30 rounded-xl p-5 flex flex-col gap-4">
+          <h3 class="font-bold text-sm text-blue-400 flex items-center gap-2 border-b border-slate-700 pb-3">
             <i data-lucide="building-2" class="w-4 h-4"></i>
             Identidad, Logo y Clave de Acceso General (Login Empresa)
           </h3>
           <div class="flex flex-col gap-3">
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Nombre de la Empresa / Sistema</label>
-              <input type="text" id="cfg-company-name" placeholder="Ej. HUBERT CHECKIN PRO" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de la Empresa / Sistema</label>
+              <input type="text" id="cfg-company-name" placeholder="Ej. HUBERT CHECKIN PRO" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
 
             <!-- SUBIR LOGO O IMAGEN DE LA EMPRESA -->
             <div>
-              <label class="block text-xs font-bold text-yellow-400 mb-1 flex items-center gap-1">
+              <label class="block text-xs font-bold text-sky-400 mb-1 flex items-center gap-1">
                 <i data-lucide="image" class="w-3.5 h-3.5"></i>
                 Logo o Imagen de la Empresa (Inicio y Encabezado)
               </label>
               <input type="hidden" id="cfg-company-logo-base64" value="">
-              <div class="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-                <div id="cfg-company-logo-preview" class="w-16 h-16 rounded-full medallion-badge overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  <i data-lucide="building-2" class="w-7 h-7 text-yellow-400"></i>
+              <div class="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-3">
+                <div id="cfg-company-logo-preview" class="w-16 h-16 rounded-xl bg-slate-900 overflow-hidden flex-shrink-0 flex items-center justify-center border border-slate-600">
+                  <i data-lucide="building-2" class="w-7 h-7 text-slate-500"></i>
                 </div>
                 <div class="flex-1 flex flex-col gap-1.5">
                   <input type="file" id="cfg-company-logo-file" accept="image/*" onchange="procesarLogoEmpresaSeleccionado(event)" class="hidden">
-                  <button type="button" onclick="document.getElementById('cfg-company-logo-file').click()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-1.5 rounded-md text-xs font-semibold border border-zinc-700 transition flex items-center gap-1.5 w-fit">
-                    <i data-lucide="upload" class="w-3.5 h-3.5 text-yellow-400"></i> Seleccionar Logo / Imagen
+                  <button type="button" onclick="document.getElementById('cfg-company-logo-file').click()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-md text-xs font-semibold border border-slate-600 transition flex items-center gap-1.5 w-fit">
+                    <i data-lucide="upload" class="w-3.5 h-3.5"></i> Seleccionar Logo / Imagen
                   </button>
                   <button type="button" id="btn-remove-company-logo" onclick="removerLogoEmpresaSeleccionado()" class="hidden text-[11px] text-rose-400 hover:underline w-fit">
                     Quitar logo actual
                   </button>
                 </div>
               </div>
-              <p class="text-[10px] text-zinc-400 mt-1">Se mostrará en la pantalla de inicio de sesión y en el encabezado superior para todos los dispositivos.</p>
+              <p class="text-[10px] text-slate-400 mt-1">Se mostrará en la pantalla de inicio de sesión y en el encabezado superior para todos los dispositivos.</p>
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Nueva Clave de Acceso General</label>
-              <input type="password" id="cfg-company-pass" placeholder="Ingresa nueva clave general (opcional)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Nueva Clave de Acceso General</label>
+              <input type="password" id="cfg-company-pass" placeholder="Ingresa nueva clave general (opcional)" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
-            <button onclick="guardarConfiguracionEmpresa()" class="bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition self-start px-4 flex items-center gap-1.5">
+            <button onclick="guardarConfiguracionEmpresa()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-xs transition self-start px-4 flex items-center gap-1.5">
               <i data-lucide="save" class="w-3.5 h-3.5"></i>
               Guardar Logo y Datos de Empresa
             </button>
           </div>
         </div>
 
-        <div class="bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-4">
-          <h3 class="font-bold text-sm text-yellow-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
+        <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-4">
+          <h3 class="font-bold text-sm text-emerald-400 flex items-center gap-2 border-b border-slate-700 pb-3">
             <i data-lucide="database" class="w-4 h-4"></i>
             Conexión de Base de Datos Firebase (Sincronización Nube)
           </h3>
           <div class="flex flex-col gap-3">
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Database URL (Realtime DB)</label>
-              <input type="text" id="cfg-firebase-url" readonly class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 font-mono">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Database URL (Realtime DB)</label>
+              <input type="text" id="cfg-firebase-url" readonly class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 font-mono">
             </div>
           </div>
         </div>
 
-        <div class="bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-4">
-          <h3 class="font-bold text-sm text-white flex items-center gap-2 border-b border-zinc-800 pb-3">
-            <i data-lucide="key" class="w-4 h-4 text-yellow-400"></i>
+        <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-4">
+          <h3 class="font-bold text-sm text-slate-100 flex items-center gap-2 border-b border-slate-700 pb-3">
+            <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
             Cambiar contraseña de Administrador (Acceso al Panel)
           </h3>
           <div class="flex flex-col gap-3">
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Nueva contraseña de Admin (mínimo 8 caracteres)</label>
-              <input type="password" id="new-pin-input" autocomplete="new-password" placeholder="Nueva contraseña" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-yellow-400">
+              <label class="block text-xs font-medium text-slate-400 mb-1">Nueva contraseña de Admin (mínimo 8 caracteres)</label>
+              <input type="password" id="new-pin-input" autocomplete="new-password" placeholder="Nueva contraseña" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
             </div>
-            <button onclick="cambiarPasswordAdmin()" class="bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2 rounded-lg text-xs transition self-start px-4">
+            <button onclick="cambiarPasswordAdmin()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-lg text-xs transition self-start px-4">
               Guardar Nueva Contraseña
             </button>
           </div>
         </div>
 
-        <div class="bg-zinc-950/90 border border-zinc-800 rounded-xl p-5 flex flex-col gap-3">
-          <h3 class="font-bold text-sm text-rose-400 flex items-center gap-2 border-b border-zinc-800 pb-3">
+        <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-5 flex flex-col gap-3">
+          <h3 class="font-bold text-sm text-rose-400 flex items-center gap-2 border-b border-slate-700 pb-3">
             <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
             Mantenimiento de Base de Datos Nube
           </h3>
@@ -955,7 +920,7 @@
   </main>
 
   <!-- PIE DE PÁGINA -->
-  <footer class="bg-zinc-950 border-t border-zinc-800 px-6 py-4 text-center text-xs text-zinc-500">
+  <footer class="bg-slate-950 border-t border-slate-800 px-6 py-4 text-center text-xs text-slate-500">
     <p>© 2026 HUBERT CHECKIN PRO - Sincronización Remota y Control de Jornadas Laborales</p>
   </footer>
 
@@ -964,9 +929,9 @@
     // =====================================================================
     // CONEXIÓN Y SINCRONIZACIÓN DE FIREBASE REALTIME DB
     // =====================================================================
-    const FIREBASE_URL = "https://checador-empresa-6b10a-empresa1.firebaseio.com/";
+    const FIREBASE_URL = "https://checador-empresa-6b10a-default-rtdb.firebaseio.com/";
     const FIREBASE_API_KEY = "AIzaSyCHJySdiXmkrkrJKb5v_CjCu64ZJib-yio";
-    const MAX_EQUIPOS_POR_USUARIO = 2; // Soporta laptop + celular por colaborador
+    const MAX_EQUIPOS_POR_USUARIO = 1; // 1 dispositivo único vinculado por colaborador (admins sin restricción)
     let adminUidVerificado = null;
 
     let defaultFirebaseConfig = {
@@ -1083,13 +1048,13 @@
               }
             });
             historial = combinados.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+            localStorage.setItem('checkin_history', JSON.stringify(historial));
           } else {
             historial = pendientesLocales.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             if (historial.length > 0) {
-              localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+              localStorage.setItem('checkin_history', JSON.stringify(historial));
             } else {
-              localStorage.removeItem('checkin_e1_history');
+              localStorage.removeItem('checkin_history');
             }
           }
           programarRenderHistorial();
@@ -1118,16 +1083,16 @@
                 empNorm.registeredDeviceToken = empNorm.registeredDeviceTokens[0] || null;
                 return empNorm;
               });
-            localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+            localStorage.setItem('checkin_employees', JSON.stringify(empleados));
           } else {
             empleados = [];
-            localStorage.removeItem('checkin_e1_employees');
+            localStorage.removeItem('checkin_employees');
           }
           renderEmployeeSelect();
           renderEmployeesTable();
           renderTurnosTable();
           renderHoursTable();
-          if (selectedEmployeeId) onSelectEmployee(true);
+          if (selectedEmployeeId) onSelectEmployee();
         } catch (e) {
           console.error("Error al procesar snapshot de empleados:", e);
         }
@@ -1148,20 +1113,20 @@
                 hashClaveEmpresa(cfgVal.password).then((h) => {
                   if (h) {
                     companyPasswordHashCache = h;
-                    try { localStorage.setItem('checkin_e1_company_pass_hash', h); } catch (_) {}
+                    try { localStorage.setItem('checkin_company_pass_hash', h); } catch (_) {}
                   }
                 });
               }
               companyLogo = cfgVal.logo || '';
               if (companyLogo) {
-                localStorage.setItem('checkin_e1_company_logo', companyLogo);
+                localStorage.setItem('checkin_company_logo', companyLogo);
               } else {
-                localStorage.removeItem('checkin_e1_company_logo');
+                localStorage.removeItem('checkin_company_logo');
               }
               if (cfgVal.officialEntryTime) officialEntryTime = cfgVal.officialEntryTime;
               if (typeof cfgVal.toleranceMinutes === 'number') toleranceMinutes = cfgVal.toleranceMinutes;
               try {
-                localStorage.setItem('checkin_e1_company_cfg', JSON.stringify({
+                localStorage.setItem('checkin_company_cfg', JSON.stringify({
                   name: companyName,
                   officialEntryTime: officialEntryTime,
                   toleranceMinutes: toleranceMinutes
@@ -1302,21 +1267,21 @@
         if (bloqueado) {
           btn.disabled = true;
           btn.classList.add('opacity-45', 'cursor-not-allowed', 'pointer-events-none');
-          btn.classList.remove('hover:bg-zinc-900', 'border-yellow-400', 'ring-2', 'ring-yellow-400/50');
+          btn.classList.remove('hover:bg-slate-700/40', 'border-blue-500', 'ring-2', 'ring-blue-500/50');
           if (selectedEventType === tipo) {
             selectedEventType = '';
           }
 
           if (!badgeBloqueo) {
             badgeBloqueo = document.createElement('span');
-            badgeBloqueo.className = 'badge-evento-bloqueado mt-1 inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-900 text-yellow-300 border border-yellow-400/30 w-fit';
+            badgeBloqueo.className = 'badge-evento-bloqueado mt-1 inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-emerald-500/30 w-fit';
             btn.appendChild(badgeBloqueo);
           }
           badgeBloqueo.innerText = yaHecho ? '✓ Ya registrado hoy' : '🔒 Paso anterior';
         } else {
           btn.disabled = false;
           btn.classList.remove('opacity-45', 'cursor-not-allowed', 'pointer-events-none');
-          btn.classList.add('hover:bg-zinc-900');
+          btn.classList.add('hover:bg-slate-700/40');
           if (badgeBloqueo) badgeBloqueo.remove();
         }
       });
@@ -1325,27 +1290,27 @@
     }
 
     function obtenerDeviceToken() {
-      let token = localStorage.getItem('checkin_e1_device_token');
+      let token = localStorage.getItem('checkin_device_token');
       if (!token) {
         token = 'DEV-' + Math.random().toString(36).substring(2, 9).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
-        localStorage.setItem('checkin_e1_device_token', token);
+        localStorage.setItem('checkin_device_token', token);
       }
       return token;
     }
 
     const currentDeviceToken = obtenerDeviceToken();
 
-    let empleados = JSON.parse(localStorage.getItem('checkin_e1_employees')) || [];
-    let historial = (JSON.parse(localStorage.getItem('checkin_e1_history')) || []).filter(h => h && h.eventType !== 'Login Empresa');
-    localStorage.removeItem('checkin_e1_admin_pin');
+    let empleados = JSON.parse(localStorage.getItem('checkin_employees')) || [];
+    let historial = (JSON.parse(localStorage.getItem('checkin_history')) || []).filter(h => h && h.eventType !== 'Login Empresa');
+    localStorage.removeItem('checkin_admin_pin');
     
     // LOGIN DE EMPRESA, LOGO Y COLABORADOR ACTIVO
     let companyPassword = null; // se llena con la clave real desde Firebase
     let companyPasswordFromServer = false;
-    let companyPasswordHashCache = localStorage.getItem('checkin_e1_company_pass_hash') || '';
+    let companyPasswordHashCache = localStorage.getItem('checkin_company_pass_hash') || '';
     let companyName = 'HUBERT CHECKIN PRO';
     try {
-      const cfgGuardada = JSON.parse(localStorage.getItem('checkin_e1_company_cfg') || 'null');
+      const cfgGuardada = JSON.parse(localStorage.getItem('checkin_company_cfg') || 'null');
       if (cfgGuardada) {
         if (cfgGuardada.name) companyName = cfgGuardada.name;
       }
@@ -1358,7 +1323,7 @@
       const buf = await window.crypto.subtle.digest('SHA-256', datos);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
-    let companyLogo = localStorage.getItem('checkin_e1_company_logo') || '';
+    let companyLogo = localStorage.getItem('checkin_company_logo') || '';
     let isCompanyLoggedIn = false;
     let activeLoggedInEmp = null;
 
@@ -1366,7 +1331,7 @@
     let officialEntryTime = '08:00';
     let toleranceMinutes = 15;
     try {
-      const cfgH = JSON.parse(localStorage.getItem('checkin_e1_company_cfg') || 'null');
+      const cfgH = JSON.parse(localStorage.getItem('checkin_company_cfg') || 'null');
       if (cfgH && cfgH.officialEntryTime) officialEntryTime = cfgH.officialEntryTime;
       if (cfgH && typeof cfgH.toleranceMinutes === 'number') toleranceMinutes = cfgH.toleranceMinutes;
     } catch (_) {}
@@ -1456,11 +1421,11 @@
 
       if (companyLogo) {
         if (loginContainer) {
-          loginContainer.className = 'mx-auto bg-zinc-950 border-2 border-yellow-400 rounded-2xl p-2 w-fit max-w-[220px] flex items-center justify-center overflow-hidden shadow-lg';
+          loginContainer.className = 'mx-auto bg-slate-800/80 border border-slate-700 rounded-2xl p-2 w-fit max-w-[220px] flex items-center justify-center overflow-hidden shadow-lg';
           loginContainer.innerHTML = `<img src="${companyLogo}" alt="Logo Empresa" class="max-h-24 w-auto object-contain rounded-xl">`;
         }
         if (headerContainer) {
-          headerContainer.className = 'bg-zinc-950 border-2 border-yellow-400 rounded-xl p-1 shadow-lg flex items-center justify-center overflow-hidden';
+          headerContainer.className = 'bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-lg flex items-center justify-center overflow-hidden';
           headerContainer.innerHTML = `<img src="${companyLogo}" alt="Logo Empresa" class="h-11 w-auto max-w-[140px] object-contain rounded-lg">`;
         }
         if (adminPreview) {
@@ -1469,15 +1434,15 @@
         if (btnRemove) btnRemove.classList.remove('hidden');
       } else {
         if (loginContainer) {
-          loginContainer.className = 'mx-auto p-4 medallion-badge text-yellow-400 rounded-full w-fit flex items-center justify-center overflow-hidden';
+          loginContainer.className = 'mx-auto p-4 bg-blue-600/10 border border-blue-500/20 text-blue-400 rounded-2xl w-fit flex items-center justify-center overflow-hidden';
           loginContainer.innerHTML = `<i data-lucide="building-2" class="w-10 h-10"></i>`;
         }
         if (headerContainer) {
-          headerContainer.className = 'p-2.5 medallion-badge rounded-full shadow-lg flex items-center justify-center overflow-hidden';
-          headerContainer.innerHTML = `<i data-lucide="cloud-lightning" class="w-7 h-7 text-yellow-400"></i>`;
+          headerContainer.className = 'p-2.5 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center overflow-hidden';
+          headerContainer.innerHTML = `<i data-lucide="cloud-lightning" class="w-7 h-7 text-white"></i>`;
         }
         if (adminPreview) {
-          adminPreview.innerHTML = `<i data-lucide="building-2" class="w-7 h-7 text-yellow-400"></i>`;
+          adminPreview.innerHTML = `<i data-lucide="building-2" class="w-7 h-7 text-slate-500"></i>`;
         }
         if (btnRemove) btnRemove.classList.add('hidden');
       }
@@ -1536,7 +1501,7 @@
       if (hiddenEl) hiddenEl.value = '';
       if (fileEl) fileEl.value = '';
       if (previewEl) {
-        previewEl.innerHTML = `<i data-lucide="building-2" class="w-7 h-7 text-yellow-400"></i>`;
+        previewEl.innerHTML = `<i data-lucide="building-2" class="w-7 h-7 text-slate-500"></i>`;
       }
       document.getElementById('btn-remove-company-logo')?.classList.add('hidden');
       if (window.lucide) lucide.createIcons();
@@ -1561,16 +1526,16 @@
         
         titleEl.innerText = "¡Bienvenido a tu Jornada!";
         subtitleEl.innerText = "Mensaje de Optimismo e Inicio de Labores";
-        subtitleEl.className = "text-xs font-bold uppercase tracking-wider text-yellow-400";
-        iconBg.className = "mx-auto p-5 medallion-badge text-yellow-400 rounded-full w-fit";
+        subtitleEl.className = "text-xs font-semibold uppercase tracking-wider text-emerald-400";
+        iconBg.className = "mx-auto p-5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl w-fit";
         if (iconEl) iconEl.setAttribute('data-lucide', 'sparkles');
 
         if (tipoEvento === 'Entrada' && empCumple && esCumpleHoy(empCumple)) {
           const primerNombre = String(empCumple.name || '').trim().split(/\s+/)[0] || '';
           titleEl.innerText = `🎂 ¡Feliz cumpleaños, ${primerNombre}!`;
           subtitleEl.innerText = "Hoy es tu día especial";
-          subtitleEl.className = "text-xs font-bold uppercase tracking-wider text-yellow-300";
-          iconBg.className = "mx-auto p-5 medallion-badge text-yellow-300 rounded-full w-fit";
+          subtitleEl.className = "text-xs font-semibold uppercase tracking-wider text-pink-400";
+          iconBg.className = "mx-auto p-5 bg-pink-500/10 border border-pink-500/20 text-pink-400 rounded-2xl w-fit";
           if (iconEl) iconEl.setAttribute('data-lucide', 'cake');
           fraseElegida = "Todo el equipo te desea un día lleno de alegría, buenos momentos y muchas bendiciones. ¡Que cumplas muchísimos más!";
         }
@@ -1580,8 +1545,8 @@
 
         titleEl.innerText = "¡Tiempo de Descanso / Salida!";
         subtitleEl.innerText = "Mensaje de Descanso Laboral y Reconocimiento";
-        subtitleEl.className = "text-xs font-bold uppercase tracking-wider text-yellow-400";
-        iconBg.className = "mx-auto p-5 medallion-badge text-yellow-400 rounded-full w-fit";
+        subtitleEl.className = "text-xs font-semibold uppercase tracking-wider text-amber-400";
+        iconBg.className = "mx-auto p-5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-2xl w-fit";
         if (iconEl) iconEl.setAttribute('data-lucide', 'coffee');
       }
 
@@ -1633,7 +1598,7 @@
       }
 
       if (badge) {
-        badge.innerHTML = `<i data-lucide="alarm-clock" class="w-3.5 h-3.5 text-yellow-400"></i> ${textoHorario}`;
+        badge.innerHTML = `<i data-lucide="alarm-clock" class="w-3.5 h-3.5 text-amber-400"></i> ${textoHorario}`;
         if (window.lucide) lucide.createIcons();
       }
       if (inputEntry) inputEntry.value = officialEntryTime;
@@ -1652,8 +1617,10 @@
 
       let claveCorrecta = false;
       if (companyPasswordFromServer && companyPassword) {
+        // Con internet: se compara contra la clave vigente en la nube
         claveCorrecta = (ingresadaEmpresa === companyPassword);
       } else if (companyPasswordHashCache) {
+        // Sin internet: se compara contra la huella guardada en este equipo
         const hIngresada = await hashClaveEmpresa(ingresadaEmpresa);
         claveCorrecta = (hIngresada !== '' && hIngresada === companyPasswordHashCache);
       } else {
@@ -1744,9 +1711,9 @@
       }
 
       if (companyLogo) {
-        localStorage.setItem('checkin_e1_company_logo', companyLogo);
+        localStorage.setItem('checkin_company_logo', companyLogo);
       } else {
-        localStorage.removeItem('checkin_e1_company_logo');
+        localStorage.removeItem('checkin_company_logo');
       }
 
       const updateObj = {
@@ -1875,10 +1842,10 @@
       if (!navigator.onLine) {
         isServerTimeSynced = false;
         if (timeBox) {
-          timeBox.innerHTML = `<span class="text-yellow-300 font-semibold">Modo Offline: usando hora del equipo</span>`;
+          timeBox.innerHTML = `<span class="text-amber-300 font-semibold">Modo Offline: usando hora del equipo</span>`;
         }
         if (timeBadge) {
-          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-yellow-400/15 text-yellow-300 border border-yellow-400/30 rounded-md font-mono';
+          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-md font-mono';
           timeBadge.innerText = 'Offline';
         }
         return;
@@ -1889,19 +1856,19 @@
         isServerTimeSynced = true;
 
         if (timeBox) {
-          timeBox.innerHTML = `<span class="text-yellow-400 font-semibold">Hora de Red Sincronizada</span>`;
+          timeBox.innerHTML = `<span class="text-emerald-400 font-semibold">Hora de Red Sincronizada</span>`;
         }
         if (timeBadge) {
-          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-yellow-400 text-zinc-950 font-bold rounded-md font-mono';
+          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-md font-mono';
           timeBadge.innerText = 'NTP OK';
         }
       } catch (err) {
         isServerTimeSynced = false;
         if (timeBox) {
-          timeBox.innerHTML = `<span class="text-yellow-300 font-semibold">Hora local activa (sin red NTP)</span>`;
+          timeBox.innerHTML = `<span class="text-amber-300 font-semibold">Hora local activa (sin red NTP)</span>`;
         }
         if (timeBadge) {
-          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-zinc-800 text-zinc-300 border border-zinc-700 rounded-md font-mono';
+          timeBadge.className = 'px-1.5 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-md font-mono';
           timeBadge.innerText = 'Local';
         }
       }
@@ -1933,7 +1900,7 @@
         gain2.gain.setValueAtTime(0.25, audioCtx.currentTime + 0.12);
         gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
         osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
+        osc2.connect(audioCtx.destination);
         osc2.start(audioCtx.currentTime + 0.12);
         osc2.stop(audioCtx.currentTime + 0.35);
       } catch (err) {
@@ -1996,7 +1963,7 @@
             accuracy: Math.round(position.coords.accuracy),
             capturedAt: Date.now()
           };
-          actualizarTextoGPS(`<span class="text-yellow-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
+          actualizarTextoGPS(`<span class="text-emerald-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
         },
         (error) => {
           console.warn("Error obteniendo GPS continuo:", error.message);
@@ -2166,13 +2133,13 @@
         const el = document.getElementById(`admin-tab-${t}`);
         const btn = document.getElementById(`tab-btn-${t}`);
         if (el) el.classList.add('hidden');
-        if (btn) btn.className = 'px-4 py-2 text-xs font-bold rounded-lg text-zinc-400 hover:text-yellow-300 transition flex items-center gap-1.5';
+        if (btn) btn.className = 'px-4 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5';
       });
 
       const activeEl = document.getElementById(`admin-tab-${tabName}`);
       const activeBtn = document.getElementById(`tab-btn-${tabName}`);
       if (activeEl) activeEl.classList.remove('hidden');
-      if (activeBtn) activeBtn.className = 'px-4 py-2 text-xs font-extrabold rounded-lg bg-yellow-400 text-zinc-950 transition flex items-center gap-1.5';
+      if (activeBtn) activeBtn.className = 'px-4 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white transition flex items-center gap-1.5';
 
       if (tabName === 'hours') {
         renderHoursTable();
@@ -2264,7 +2231,7 @@
           await employeesRef.child(emp._key || empId.replace(/[^a-zA-Z0-9]/g, '_')).update(updateData);
         }
         Object.assign(emp, updateData);
-        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
         renderTurnosTable();
         renderHoursTable();
         actualizarBadgeHorario();
@@ -2299,7 +2266,7 @@
         delete emp.turnoEntrada;
         delete emp.turnoSalida;
         delete emp.turnoTolerancia;
-        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
         renderTurnosTable();
         renderHoursTable();
         actualizarBadgeHorario();
@@ -2315,7 +2282,7 @@
       if (!tbody) return;
 
       if (empleados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-zinc-500">No hay colaboradores registrados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No hay colaboradores registrados.</td></tr>`;
         return;
       }
 
@@ -2329,16 +2296,16 @@
           ? `${emp.turnoTolerancia} min`
           : `${toleranceMinutes} min`;
         const badgeClass = tieneTurno
-          ? 'bg-yellow-400/15 text-yellow-300 border-yellow-400/40'
-          : 'bg-zinc-800 text-zinc-300 border-zinc-700';
+          ? 'bg-sky-500/20 text-sky-300 border-sky-500/30'
+          : 'bg-slate-700/60 text-slate-300 border-slate-600';
 
         return `
-          <tr class="hover:bg-zinc-900/80 transition">
-            <td class="p-3.5 font-medium text-white">${emp.name} <span class="text-zinc-500 text-xs">(${emp.id})</span></td>
-            <td class="p-3.5 text-zinc-400">${emp.dept}</td>
+          <tr class="hover:bg-slate-700/30 transition">
+            <td class="p-3.5 font-medium text-white">${emp.name} <span class="text-slate-500 text-xs">(${emp.id})</span></td>
+            <td class="p-3.5 text-slate-400">${emp.dept}</td>
             <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-md text-xs font-semibold border ${badgeClass}">${nombreTurno}</span></td>
-            <td class="p-3.5 text-center font-mono text-zinc-200">${horarioTxt}</td>
-            <td class="p-3.5 text-center font-mono text-yellow-300">${tolTxt}</td>
+            <td class="p-3.5 text-center font-mono text-slate-200">${horarioTxt}</td>
+            <td class="p-3.5 text-center font-mono text-amber-300">${tolTxt}</td>
           </tr>
         `;
       }).join('');
@@ -2366,11 +2333,9 @@
       const dropdown = document.getElementById('employee-dropdown-list');
       if (!dropdown) return;
 
-      let term = filterText.toLowerCase().trim();
-      const mEtiqueta = term.match(/\(([^()]+)\)\s*$/);
-      if (mEtiqueta) term = mEtiqueta[1].trim();
+      const term = filterText.toLowerCase().trim();
       if (!term) {
-        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-zinc-400 italic">Escribe tu ID de empleado para buscar...</div>`;
+        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 italic">Escribe tu ID de empleado para buscar...</div>`;
         return;
       }
 
@@ -2381,7 +2346,7 @@
       );
 
       if (filtered.length === 0) {
-        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-zinc-500 italic">No se encontraron colaboradores con ese ID</div>`;
+        dropdown.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No se encontraron colaboradores con ese ID</div>`;
         return;
       }
 
@@ -2390,16 +2355,16 @@
         const isSelected = emp.id === selectedEmployeeId;
 
         return `
-          <div onclick="selectEmployeeFromCombobox('${emp.id}')" class="p-3 hover:bg-zinc-900 cursor-pointer transition flex items-center justify-between ${isSelected ? 'bg-yellow-400/15 border-l-4 border-yellow-400' : ''}">
+          <div onclick="selectEmployeeFromCombobox('${emp.id}')" class="p-3 hover:bg-slate-800/80 cursor-pointer transition flex items-center justify-between ${isSelected ? 'bg-blue-600/20 border-l-4 border-blue-500' : ''}">
             <div>
               <p class="font-medium text-xs text-white flex items-center gap-1.5">
-                <span class="font-mono text-yellow-400 font-bold">${emp.id}</span> · ${emp.name}
-                ${emp.isAdmin ? '<span class="px-1.5 py-0.2 bg-yellow-400/15 text-yellow-300 text-[10px] font-semibold border border-yellow-400/30 rounded">Admin</span>' : ''}
-                ${isDeviceOwner ? '<span class="px-1.5 py-0.2 bg-yellow-400 text-zinc-950 text-[10px] font-bold rounded">Tu Equipo</span>' : ''}
+                <span class="font-mono text-amber-300 font-bold">${emp.id}</span> · ${emp.name}
+                ${emp.isAdmin ? '<span class="px-1.5 py-0.2 bg-amber-500/20 text-amber-300 text-[10px] font-semibold border border-amber-500/30 rounded">Admin</span>' : ''}
+                ${isDeviceOwner ? '<span class="px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30 rounded">Tu Equipo</span>' : ''}
               </p>
-              <p class="text-[11px] text-zinc-400">${emp.dept}</p>
+              <p class="text-[11px] text-slate-400">${emp.dept}</p>
             </div>
-            ${isSelected ? '<i data-lucide="check" class="w-4 h-4 text-yellow-400"></i>' : ''}
+            ${isSelected ? '<i data-lucide="check" class="w-4 h-4 text-blue-400"></i>' : ''}
           </div>
         `;
       }).join('');
@@ -2438,8 +2403,6 @@
           onSelectEmployee();
         }
       }
-      const exacto = !selectedEmployeeId && empleados.find(e => `${e.name} (${e.id})`.toLowerCase() === inputVal.trim().toLowerCase());
-      if (exacto) { selectEmployeeFromCombobox(exacto.id); return; }
       openEmployeeCombobox();
     }
 
@@ -2464,18 +2427,18 @@
       }
     });
 
-    function onSelectEmployee(conservarPin = false) {
+    function onSelectEmployee() {
       const card = document.getElementById('employee-card');
       const pinContainer = document.getElementById('pin-input-container');
       const pinInput = document.getElementById('employee-pin-input');
 
-      if (pinInput && !conservarPin) pinInput.value = '';
+      if (pinInput) pinInput.value = '';
       actualizarBadgeHorario();
 
       if (!selectedEmployeeId) {
         card.innerHTML = `
-          <div class="p-4 medallion-badge rounded-full text-yellow-400 mb-1"><i data-lucide="user" class="w-10 h-10"></i></div>
-          <p class="text-zinc-400 text-sm">Selecciona un empleado para habilitar el registro</p>
+          <div class="p-4 bg-slate-800 rounded-full text-slate-600 mb-1"><i data-lucide="user" class="w-10 h-10"></i></div>
+          <p class="text-slate-400 text-sm">Selecciona un empleado para habilitar el registro</p>
         `;
         pinContainer.classList.add('hidden');
         if (window.lucide) lucide.createIcons();
@@ -2490,34 +2453,34 @@
 
         let statusDispositivo = '';
         if (emp.isAdmin) {
-          statusDispositivo = '<span class="text-yellow-300 font-semibold">🛡️ Administrador: acceso habilitado en laptop y celular</span>';
+          statusDispositivo = '<span class="text-amber-300 font-semibold">🛡️ Administrador: acceso habilitado en laptop y celular</span>';
         } else if (esteEquipoEnlazado) {
-          statusDispositivo = `<span class="text-yellow-400">✓ Equipo autorizado (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO} vinculados)</span>`;
+          statusDispositivo = `<span class="text-emerald-400">✓ Equipo autorizado (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO} vinculados)</span>`;
         } else if (equipos.length < MAX_EQUIPOS_POR_USUARIO) {
-          statusDispositivo = `<span class="text-zinc-200">+ Este equipo se vinculará al marcar (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO} usados)</span>`;
+          statusDispositivo = `<span class="text-sky-400">+ Este equipo se vinculará al marcar (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO} usados)</span>`;
         } else {
           statusDispositivo = `<span class="text-rose-400 font-bold">⚠️ Límite de ${MAX_EQUIPOS_POR_USUARIO} equipos alcanzado (laptop/celular)</span>`;
         }
 
         const completadosHoy = obtenerEventosRegistradosHoy(emp.id);
         const resumenHoyHtml = completadosHoy.size > 0
-          ? `<p class="text-[11px] text-yellow-300 mt-1">Marcas hoy: ${Array.from(completadosHoy).join(' · ')}</p>`
-          : `<p class="text-[11px] text-zinc-500 mt-1">Sin marcas registradas hoy</p>`;
+          ? `<p class="text-[11px] text-emerald-300 mt-1">Marcas hoy: ${Array.from(completadosHoy).join(' · ')}</p>`
+          : `<p class="text-[11px] text-slate-500 mt-1">Sin marcas registradas hoy</p>`;
 
         const turnoBadgeHtml = emp.turnoEntrada
-          ? `<span class="inline-block px-2 py-0.5 mt-1 rounded bg-yellow-400/15 text-yellow-300 border border-yellow-400/30 text-[10px] font-semibold">Turno: ${emp.turnoNombre || 'Asignado'} (${emp.turnoEntrada} - ${emp.turnoSalida || ''})</span>`
+          ? `<span class="inline-block px-2 py-0.5 mt-1 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 text-[10px] font-semibold">Turno: ${emp.turnoNombre || 'Asignado'} (${emp.turnoEntrada} - ${emp.turnoSalida || ''})</span>`
           : '';
 
         const photoHtml = emp.photo 
-          ? `<img src="${emp.photo}" class="w-16 h-16 rounded-full object-cover border-2 border-yellow-400 shadow-md flex-shrink-0">`
-          : `<div class="p-3 medallion-badge text-yellow-400 rounded-full flex-shrink-0"><i data-lucide="user-check" class="w-8 h-8"></i></div>`;
+          ? `<img src="${emp.photo}" class="w-16 h-16 rounded-full object-cover border-2 border-blue-500 shadow-md flex-shrink-0">`
+          : `<div class="p-3 bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-full flex-shrink-0"><i data-lucide="user-check" class="w-8 h-8"></i></div>`;
 
         card.innerHTML = `
           <div class="flex items-center gap-4 w-full text-left">
             ${photoHtml}
             <div class="flex-1 overflow-hidden">
               <h3 class="font-bold text-white text-base truncate">${emp.name}</h3>
-              <p class="text-xs text-zinc-400">ID: <span class="text-zinc-200 font-mono">${emp.id}</span> | Depto: <span class="text-zinc-200">${emp.dept}</span></p>
+              <p class="text-xs text-slate-400">ID: <span class="text-slate-200 font-mono">${emp.id}</span> | Depto: <span class="text-slate-200">${emp.dept}</span></p>
               ${turnoBadgeHtml}
               <p class="text-[11px] mt-1">${statusDispositivo}</p>
               ${resumenHoyHtml}
@@ -2543,12 +2506,12 @@
       selectedEventType = type;
       
       document.querySelectorAll('.event-btn').forEach(btn => {
-        btn.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50');
+        btn.classList.remove('border-blue-500', 'bg-slate-700/80', 'ring-2', 'ring-blue-500/50');
       });
 
       const selectedBtn = document.getElementById(`btn-event-${type}`);
       if (selectedBtn) {
-        selectedBtn.classList.add('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50');
+        selectedBtn.classList.add('border-blue-500', 'bg-slate-700/80', 'ring-2', 'ring-blue-500/50');
       }
 
       if (navigator.geolocation) {
@@ -2560,7 +2523,7 @@
               accuracy: Math.round(pos.coords.accuracy),
               capturedAt: Date.now()
             };
-            actualizarTextoGPS(`<span class="text-yellow-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
+            actualizarTextoGPS(`<span class="text-emerald-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
           },
           (err) => { ultimoErrorGPS = err.code; },
           { enableHighAccuracy: true, timeout: 10000 }
@@ -2578,10 +2541,10 @@
 
       if (permitido && pinVal.length >= 4) {
         btn.disabled = false;
-        btn.className = 'w-full py-4 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black text-lg rounded-xl shadow-[0_10px_24px_rgba(250,204,21,0.3)] transition flex items-center justify-center gap-3 cursor-pointer active:scale-[0.99]';
+        btn.className = 'w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-3 cursor-pointer active:scale-[0.99]';
       } else {
         btn.disabled = true;
-        btn.className = 'w-full py-4 bg-zinc-800 text-zinc-500 cursor-not-allowed font-black text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-3';
+        btn.className = 'w-full py-4 bg-slate-700 text-slate-400 cursor-not-allowed font-bold text-lg rounded-xl shadow-lg transition flex items-center justify-center gap-3';
       }
     }
 
@@ -2737,7 +2700,11 @@
 
     async function validarHuellaColaborador(emp) {
       if (!(await biometriaDisponible())) {
-        return true;
+        if (emp && emp.isAdmin === true) {
+          return true;
+        }
+        showToast('Huella Obligatoria', 'Este dispositivo no tiene sensor de huella activo o no está en conexión segura (HTTPS). Acceso bloqueado.', 'error');
+        return false;
       }
 
       try {
@@ -2754,10 +2721,19 @@
           return true;
         }
 
+        // Verificar que este dispositivo no esté vinculado biométricamente a otro colaborador distinto
+        const otroConHuellaEnEquipo = empleados.find(
+          otro => otro.id !== emp.id && otro.credId && obtenerEquiposAutorizados(otro).includes(currentDeviceToken)
+        );
+        if (otroConHuellaEnEquipo && !emp.isAdmin) {
+          showToast('Equipo ya vinculado', `Este dispositivo pertenece biométricamente a ${otroConHuellaEnEquipo.name}.`, 'error');
+          return false;
+        }
+
         showToast('Vincula tu huella', 'Coloca tu dedo en el sensor para vincularla a este equipo.', 'info');
         const datos = await enrolarHuella(emp);
         Object.assign(emp, datos);
-        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
         if (employeesRef) {
           employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update(datos).catch(() => {});
         }
@@ -2838,23 +2814,23 @@
         .filter(item => item.empId === empId && item.eventType !== 'Login Empresa')
         .sort((a, b) => b.timestamp - a.timestamp);
 
-      if (marcasDelEmpleado.length === 0) return { texto: 'Sin marcas', badge: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
+      if (marcasDelEmpleado.length === 0) return { texto: 'Sin marcas', badge: 'bg-slate-700/50 text-slate-400 border-slate-600' };
 
       const ultimaMarca = marcasDelEmpleado[0];
       const hoyStr = obtenerHoraActualCorregida().toISOString().split('T')[0];
 
       if (ultimaMarca.date !== hoyStr) {
-        return { texto: 'Fuera de Turno', badge: 'bg-zinc-800 text-zinc-400 border-zinc-700' };
+        return { texto: 'Fuera de Turno', badge: 'bg-slate-700/50 text-slate-400 border-slate-600' };
       }
 
       if (ultimaMarca.eventType === 'Vacaciones') {
-        return { texto: 'De Vacaciones', badge: 'bg-yellow-400/15 text-yellow-300 border-yellow-400/40' };
+        return { texto: 'De Vacaciones', badge: 'bg-sky-500/20 text-sky-300 border-sky-500/40' };
       }
       if (ultimaMarca.eventType === 'Incapacidad') {
-        return { texto: 'Incapacidad', badge: 'bg-zinc-800 text-yellow-300 border-yellow-400/30' };
+        return { texto: 'Incapacidad', badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40' };
       }
       if (ultimaMarca.eventType === 'Permiso') {
-        return { texto: 'Permiso', badge: 'bg-zinc-800 text-yellow-300 border-yellow-400/30' };
+        return { texto: 'Permiso', badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40' };
       }
 
       if (ultimaMarca.eventType.includes('Falta')) {
@@ -2862,11 +2838,11 @@
       }
 
       if (ultimaMarca.eventType === 'Entrada' || ultimaMarca.eventType === 'Regreso Comer') {
-        return { texto: 'Laborando', badge: 'bg-yellow-400 text-zinc-950 border-yellow-300 font-bold' };
+        return { texto: 'Laborando', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
       } else if (ultimaMarca.eventType === 'Salida Comer') {
         return { texto: 'En Comida', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
       } else {
-        return { texto: 'Salida de Turno', badge: 'bg-zinc-800 text-zinc-200 border-zinc-700' };
+        return { texto: 'Salida de Turno', badge: 'bg-rose-500/20 text-rose-300 border-rose-500/30' };
       }
     }
 
@@ -2926,30 +2902,30 @@
       if (!tbody) return;
 
       if (empleados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-zinc-500">No hay colaboradores registrados para calcular horas.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-500">No hay colaboradores registrados para calcular horas.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = empleados.map(emp => {
         const estatus = obtenerEstatusColaborador(emp.id);
         const horas = calcularResumenHorasEmpleado(emp.id);
-        const turnoLabel = emp.turnoEntrada ? `<span class="text-yellow-300 font-semibold">${emp.turnoNombre || 'Turno'} (${emp.turnoEntrada})</span>` : emp.dept;
+        const turnoLabel = emp.turnoEntrada ? `<span class="text-sky-300 font-semibold">${emp.turnoNombre || 'Turno'} (${emp.turnoEntrada})</span>` : emp.dept;
 
         return `
-          <tr class="hover:bg-zinc-900/80 transition">
-            <td class="p-3.5 font-medium text-white">${emp.name} <span class="text-zinc-500 text-xs">(${emp.id})</span></td>
-            <td class="p-3.5 text-zinc-400">${turnoLabel}</td>
+          <tr class="hover:bg-slate-700/30 transition">
+            <td class="p-3.5 font-medium text-white">${emp.name} <span class="text-slate-500 text-xs">(${emp.id})</span></td>
+            <td class="p-3.5 text-slate-400">${turnoLabel}</td>
             <td class="p-3.5 text-center">
               <span class="px-2.5 py-1 rounded-md text-xs font-semibold border ${estatus.badge}">
                 ${estatus.texto}
               </span>
             </td>
-            <td class="p-3.5 text-center font-mono text-yellow-300 font-bold bg-yellow-400/5">${horas.hoy}</td>
-            <td class="p-3.5 text-center font-mono text-yellow-400 font-bold bg-yellow-400/5">${horas.semana}</td>
-            <td class="p-3.5 text-center font-mono text-amber-300 font-bold bg-yellow-400/5">${horas.mes}</td>
-            <td class="p-3.5 text-center font-mono text-rose-300 font-bold bg-rose-950/20">${horas.totalRetardos}</td>
-            <td class="p-3.5 text-center font-mono text-red-400 font-bold bg-red-950/25">${horas.totalFaltas}</td>
-            <td class="p-3.5 text-center font-mono text-yellow-300 font-bold bg-zinc-900/50">${horas.totalVacaciones}v / ${horas.totalIncapacidades}i</td>
+            <td class="p-3.5 text-center font-mono text-blue-300 font-bold bg-blue-900/10">${horas.hoy}</td>
+            <td class="p-3.5 text-center font-mono text-emerald-300 font-bold bg-emerald-900/10">${horas.semana}</td>
+            <td class="p-3.5 text-center font-mono text-amber-300 font-bold bg-amber-900/10">${horas.mes}</td>
+            <td class="p-3.5 text-center font-mono text-rose-300 font-bold bg-rose-900/10">${horas.totalRetardos}</td>
+            <td class="p-3.5 text-center font-mono text-red-400 font-bold bg-red-950/20">${horas.totalFaltas}</td>
+            <td class="p-3.5 text-center font-mono text-sky-300 font-bold bg-sky-900/10">${horas.totalVacaciones}v / ${horas.totalIncapacidades}i</td>
           </tr>
         `;
       }).join('');
@@ -2960,14 +2936,14 @@
     // =====================================================================
     function obtenerColaOffline() {
       try {
-        return JSON.parse(localStorage.getItem('checkin_e1_offline_queue') || '[]');
+        return JSON.parse(localStorage.getItem('checkin_offline_queue') || '[]');
       } catch (_) {
         return [];
       }
     }
 
     function guardarColaOffline(cola) {
-      localStorage.setItem('checkin_e1_offline_queue', JSON.stringify(cola));
+      localStorage.setItem('checkin_offline_queue', JSON.stringify(cola));
       actualizarIndicadorPendientes();
     }
 
@@ -2977,11 +2953,11 @@
       if (!badge) return;
 
       if (cola.length > 0) {
-        badge.className = 'text-xs px-2.5 py-1 bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 rounded-full font-semibold flex items-center gap-1.5';
+        badge.className = 'text-xs px-2.5 py-1 bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full font-medium flex items-center gap-1.5';
         badge.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i> ${cola.length} pendiente(s) por enviar`;
         if (window.lucide) lucide.createIcons();
       } else if (navigator.onLine) {
-        badge.className = 'text-xs px-2.5 py-1 bg-yellow-400/15 text-yellow-300 border border-yellow-400/30 rounded-full font-semibold flex items-center gap-1.5';
+        badge.className = 'text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full font-medium flex items-center gap-1.5';
         badge.innerHTML = `<i data-lucide="wifi" class="w-3.5 h-3.5"></i> Conectado`;
         if (window.lucide) lucide.createIcons();
       } else {
@@ -3006,7 +2982,7 @@
 
       try {
         await asegurarSesionAnonima();
-        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura2');
+        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura');
 
         for (const item of cola) {
           try {
@@ -3030,7 +3006,7 @@
         }
 
         guardarColaOffline(pendientes);
-        localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+        localStorage.setItem('checkin_history', JSON.stringify(historial));
         renderHistoryTable();
         renderHoursTable();
 
@@ -3091,6 +3067,7 @@
         return;
       }
 
+      // 1. Verificar que no se repita un evento ya registrado hoy ni un paso anterior
       const motivoBloqueo = validarEventoPermitidoHoy(emp.id, selectedEventType);
       if (motivoBloqueo) {
         showToast('Registro bloqueado', motivoBloqueo, 'error');
@@ -3108,13 +3085,22 @@
         return;
       }
 
+      // Validación biométrica obligatoria en cada marcaje (impide que otra persona marque con el PIN)
+      const huellaMarcajeOk = await validarHuellaColaborador(emp);
+      if (!huellaMarcajeOk) {
+        document.getElementById('employee-pin-input').value = '';
+        checkCanSubmit();
+        return;
+      }
+
+      // 2. Verificar autorización de dispositivo (hasta 2 equipos: laptop + celular, o libre para Admin)
       const equiposActuales = obtenerEquiposAutorizados(emp);
       const yaAutorizado = equiposActuales.includes(currentDeviceToken);
 
       if (!emp.isAdmin && !yaAutorizado && equiposActuales.length >= MAX_EQUIPOS_POR_USUARIO) {
         showToast(
-          'Límite de 2 dispositivos',
-          'Ya tienes 2 equipos registrados (laptop y celular). Pide al administrador desvincular uno.',
+          'Equipo no autorizado (Máx. 1)',
+          'Este colaborador ya tiene un equipo vinculado. Pide al administrador desvincular el equipo anterior.',
           'error'
         );
         document.getElementById('employee-pin-input').value = '';
@@ -3150,7 +3136,7 @@
           accuracy: Math.round(posObtenida.coords.accuracy),
           capturedAt: Date.now()
         };
-        actualizarTextoGPS(`<span class="text-yellow-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
+        actualizarTextoGPS(`<span class="text-emerald-400 font-semibold">GPS Listo:</span> ${currentLocation.lat}, ${currentLocation.lng} (±${currentLocation.accuracy}m)`);
       } else {
         const lecturaReciente = currentLocation && currentLocation.capturedAt && (Date.now() - currentLocation.capturedAt) < 120000;
         if (!lecturaReciente) {
@@ -3163,11 +3149,12 @@
         }
       }
 
+      // Registrar este equipo si aún no estaba en la lista (hasta 2 dispositivos, o ilimitado para admin)
       if (!yaAutorizado && (emp.isAdmin || equiposActuales.length < MAX_EQUIPOS_POR_USUARIO)) {
         const nuevosEquipos = [...equiposActuales, currentDeviceToken];
         emp.registeredDeviceTokens = nuevosEquipos;
         emp.registeredDeviceToken = nuevosEquipos[0];
-        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+        localStorage.setItem('checkin_employees', JSON.stringify(empleados));
 
         if (employeesRef && navigator.onLine) {
           employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update({
@@ -3199,7 +3186,7 @@
           throw { code: 'functions/unavailable', message: 'Sin conexión a internet' };
         }
 
-        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura2');
+        const registrarAsistenciaSegura = firebase.functions().httpsCallable('registrarAsistenciaSegura');
         const respuesta = await registrarAsistenciaSegura(payloadServidor);
 
         const record = respuesta.data.record;
@@ -3228,7 +3215,7 @@
           if (!historial.some(h => h.id === record.id && h.empId === record.empId && h.eventType === record.eventType)) {
             historial.unshift(record);
           }
-          localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+          localStorage.setItem('checkin_history', JSON.stringify(historial));
         }
 
         playSuccessSound();
@@ -3248,7 +3235,7 @@
         document.getElementById('employee-search-input').value = '';
         document.getElementById('employee-pin-input').value = '';
         document.getElementById('pin-input-container').classList.add('hidden');
-        document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50'));
+        document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-blue-500', 'bg-slate-700/80', 'ring-2', 'ring-blue-500/50'));
         
         renderEmployeeSelect();
         onSelectEmployee();
@@ -3288,7 +3275,7 @@
           if (!historial.some(h => h.id === recordOffline.id && h.empId === recordOffline.empId && h.eventType === recordOffline.eventType)) {
             historial.unshift(recordOffline);
           }
-          localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+          localStorage.setItem('checkin_history', JSON.stringify(historial));
 
           playSuccessSound();
           showToast(
@@ -3303,7 +3290,7 @@
           document.getElementById('employee-search-input').value = '';
           document.getElementById('employee-pin-input').value = '';
           document.getElementById('pin-input-container').classList.add('hidden');
-          document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-yellow-400', 'bg-zinc-900', 'ring-2', 'ring-yellow-400/50'));
+          document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('border-blue-500', 'bg-slate-700/80', 'ring-2', 'ring-blue-500/50'));
 
           renderEmployeeSelect();
           onSelectEmployee();
@@ -3388,7 +3375,7 @@
         historial.unshift(record);
       });
 
-      localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+      localStorage.setItem('checkin_history', JSON.stringify(historial));
 
       const rangoTxt = fechas.length > 1 ? `(${fechas.length} días: ${dateVal} al ${dateEndVal})` : `el ${dateVal}`;
       showToast('Movimiento Registrado', `${faltaType} guardada para ${emp.name} ${rangoTxt}`, conGoce ? 'success' : 'error');
@@ -3402,7 +3389,7 @@
     function eliminarRegistroHistorial(recordId) {
       if (confirm('¿Deseas eliminar este registro del historial y de la nube?')) {
         historial = historial.filter(h => h.id !== recordId);
-        localStorage.setItem('checkin_e1_history', JSON.stringify(historial));
+        localStorage.setItem('checkin_history', JSON.stringify(historial));
 
         const colaActualizada = obtenerColaOffline().filter(item => item.record && item.record.id !== recordId);
         guardarColaOffline(colaActualizada);
@@ -3444,7 +3431,7 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-zinc-500">No se encontraron registros de asistencia.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-500">No se encontraron registros de asistencia.</td></tr>`;
         return;
       }
 
@@ -3452,32 +3439,32 @@
       const visibles = filtered.slice(0, MAX_FILAS_HISTORIAL);
 
       tbody.innerHTML = visibles.map(item => {
-        let badgeColor = 'bg-yellow-400/15 text-yellow-300 border-yellow-400/30';
-        if (item.eventType === 'Entrada') badgeColor = 'bg-yellow-400 text-zinc-950 border-yellow-300 font-bold';
+        let badgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        if (item.eventType === 'Entrada') badgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
         if (item.eventType === 'Salida Comer') badgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-        if (item.eventType === 'Salida') badgeColor = 'bg-zinc-800 text-zinc-100 border-zinc-600 font-bold';
-        if (item.eventType === 'Vacaciones') badgeColor = 'bg-yellow-400/20 text-yellow-300 border-yellow-400/40 font-bold';
-        if (item.eventType === 'Incapacidad') badgeColor = 'bg-zinc-800 text-yellow-300 border-yellow-400/30 font-bold';
-        if (item.eventType === 'Permiso') badgeColor = 'bg-zinc-800 text-yellow-300 border-yellow-400/30 font-bold';
+        if (item.eventType === 'Salida') badgeColor = 'bg-rose-500/20 text-rose-300 border-rose-500/30';
+        if (item.eventType === 'Vacaciones') badgeColor = 'bg-sky-500/20 text-sky-300 border-sky-500/40 font-bold';
+        if (item.eventType === 'Incapacidad') badgeColor = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40 font-bold';
+        if (item.eventType === 'Permiso') badgeColor = 'bg-teal-500/20 text-teal-300 border-teal-500/40 font-bold';
         if (item.eventType && item.eventType.includes('Falta')) badgeColor = 'bg-red-900/60 text-red-200 border-red-500 font-bold';
 
-        let tolBadge = '<span class="text-zinc-500">-</span>';
+        let tolBadge = '<span class="text-slate-500">-</span>';
         if (item.eventType === 'Entrada' && item.toleranciaStatus) {
           if (item.toleranciaStatus.retardo) {
             tolBadge = `<span class="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded text-[11px] font-bold">⚠️ Retardo (+${item.toleranciaStatus.minutosDelay} min)</span>`;
           } else {
-            tolBadge = `<span class="px-2 py-0.5 bg-yellow-400/15 text-yellow-300 border border-yellow-400/40 rounded text-[11px] font-semibold">✓ A Tiempo</span>`;
+            tolBadge = `<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded text-[11px] font-semibold">✓ A Tiempo</span>`;
           }
         } else if (item.eventType === 'Vacaciones') {
-          tolBadge = `<span class="px-2 py-0.5 bg-yellow-400/15 text-yellow-300 border border-yellow-400/40 rounded text-[11px] font-bold">CON GOCE</span>`;
+          tolBadge = `<span class="px-2 py-0.5 bg-sky-500/20 text-sky-300 border border-sky-500/40 rounded text-[11px] font-bold">CON GOCE</span>`;
         } else if (item.eventType === 'Incapacidad' || item.eventType === 'Permiso') {
-          tolBadge = `<span class="px-2 py-0.5 bg-zinc-800 text-yellow-300 border border-yellow-400/30 rounded text-[11px] font-bold">${item.eventType.toUpperCase()}</span>`;
+          tolBadge = `<span class="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 rounded text-[11px] font-bold">${item.eventType.toUpperCase()}</span>`;
         } else if (item.eventType && item.eventType.includes('Falta')) {
           tolBadge = `<span class="px-2 py-0.5 bg-red-950/80 text-red-400 border border-red-600 rounded text-[11px] font-bold">FALTA REGISTRADA</span>`;
         }
 
         const pendingBadge = item.offlinePending
-          ? `<span class="ml-1.5 px-2 py-0.5 bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 rounded text-[10px] font-bold">Pendiente envío</span>`
+          ? `<span class="ml-1.5 px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded text-[10px] font-bold">Pendiente envío</span>`
           : '';
 
         const hasGps = item.location && item.location.lat !== 'N/A';
@@ -3486,15 +3473,15 @@
         let horasBadge = '-';
         if (item.eventType === 'Salida') {
           const msCalculados = calcularHorasTrabajadasPorDia(item.empId, item.date);
-          horasBadge = `<span class="px-2 py-0.5 bg-yellow-400/10 text-yellow-300 border border-yellow-400/30 rounded font-mono font-bold">${formatearMsAHorasMinutos(msCalculados)}</span>`;
+          horasBadge = `<span class="px-2 py-0.5 bg-blue-500/10 text-blue-300 border border-blue-500/30 rounded font-mono font-bold">${formatearMsAHorasMinutos(msCalculados)}</span>`;
         }
 
         return `
-          <tr class="hover:bg-zinc-900/80 transition">
-            <td class="p-3.5 font-medium text-white">${item.empName} <span class="text-zinc-500 text-xs">(${item.empId})</span></td>
-            <td class="p-3.5 text-zinc-400">${item.empDept}</td>
-            <td class="p-3.5 text-zinc-300 font-mono">${item.date}</td>
-            <td class="p-3.5 text-zinc-300 font-mono">${item.time}</td>
+          <tr class="hover:bg-slate-700/30 transition">
+            <td class="p-3.5 font-medium text-white">${item.empName} <span class="text-slate-500 text-xs">(${item.empId})</span></td>
+            <td class="p-3.5 text-slate-400">${item.empDept}</td>
+            <td class="p-3.5 text-slate-300 font-mono">${item.date}</td>
+            <td class="p-3.5 text-slate-300 font-mono">${item.time}</td>
             <td class="p-3.5">
               <span class="px-2.5 py-1 rounded-md text-xs font-semibold border ${badgeColor}">
                 ${item.eventType}
@@ -3504,11 +3491,11 @@
             <td class="p-3.5">${horasBadge}</td>
             <td class="p-3.5">
               ${hasGps ? `
-                <a href="${mapsUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-yellow-400 hover:text-yellow-300 border border-zinc-700 rounded-md text-xs font-medium transition">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-yellow-400"></i>
+                <a href="${mapsUrl}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-blue-400 hover:text-blue-300 border border-slate-600 rounded-md text-xs font-medium transition">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-400"></i>
                   <span>Ver Mapa</span>
                 </a>
-              ` : `<span class="text-zinc-500 italic text-[11px]">${item.observaciones || 'Sin GPS'}</span>`}
+              ` : `<span class="text-slate-500 italic text-[11px]">${item.observaciones || 'Sin GPS'}</span>`}
             </td>
             <td class="p-3.5 text-right">
               <button onclick="eliminarRegistroHistorial(${item.id})" class="p-1.5 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded-lg transition" title="Borrar Registro">
@@ -3518,7 +3505,7 @@
           </tr>
         `;
       }).join('') + (filtered.length > MAX_FILAS_HISTORIAL
-        ? `<tr><td colspan="9" class="p-4 text-center text-xs text-zinc-500">Mostrando los ${MAX_FILAS_HISTORIAL} registros más recientes de ${filtered.length}. Usa los filtros (nombre, fecha o evento) para ver otros. El Excel incluye todos.</td></tr>`
+        ? `<tr><td colspan="9" class="p-4 text-center text-xs text-slate-500">Mostrando los ${MAX_FILAS_HISTORIAL} registros más recientes de ${filtered.length}. Usa los filtros (nombre, fecha o evento) para ver otros. El Excel incluye todos.</td></tr>`
         : '');
 
       if (window.lucide) lucide.createIcons();
@@ -3740,15 +3727,15 @@
 
       const escapar = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
       const filas = lista.map(({ emp, dias }) => {
-        const cuando = dias === 0 ? '<span class="font-bold text-yellow-200">¡HOY!</span>'
+        const cuando = dias === 0 ? '<span class="font-bold text-pink-200">¡HOY!</span>'
                      : dias === 1 ? 'mañana'
                      : `en ${dias} días (${textoCumple(emp)})`;
         return `<li>🎂 <strong class="text-white">${escapar(emp.name)}</strong> cumple años ${cuando}</li>`;
       }).join('');
 
       cont.innerHTML = `
-        <div class="font-bold text-yellow-300 text-sm mb-1.5">🎉 Cumpleaños de esta semana</div>
-        <ul class="text-xs text-zinc-200 flex flex-col gap-1">${filas}</ul>
+        <div class="font-bold text-pink-300 text-sm mb-1.5">🎉 Cumpleaños de esta semana</div>
+        <ul class="text-xs text-pink-100/90 flex flex-col gap-1">${filas}</ul>
       `;
       cont.classList.remove('hidden');
     }
@@ -3760,7 +3747,7 @@
       try { renderCumpleanos(); } catch (e) { console.error('Error en cumpleaños:', e); }
 
       if (empleados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-zinc-500">No hay empleados registrados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">No hay empleados registrados.</td></tr>`;
         return;
       }
 
@@ -3769,35 +3756,35 @@
         const tieneDispositivo = equipos.length > 0;
         let deviceBadge = '';
         if (emp.isAdmin) {
-          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-400/15 text-yellow-300 border border-yellow-400/30"><i data-lucide="shield-check" class="w-3 h-3"></i> Admin (Laptop + Celular)</span>`;
+          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30"><i data-lucide="shield-check" class="w-3 h-3"></i> Admin (Laptop + Celular)</span>`;
         } else if (tieneDispositivo) {
-          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-yellow-400/15 text-yellow-300 border border-yellow-400/30"><i data-lucide="smartphone-charging" class="w-3 h-3"></i> Enlazado (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO})</span>`;
+          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i data-lucide="smartphone-charging" class="w-3 h-3"></i> Enlazado (${equipos.length}/${MAX_EQUIPOS_POR_USUARIO})</span>`;
         } else {
-          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700"><i data-lucide="smartphone" class="w-3 h-3"></i> Pendiente (0/${MAX_EQUIPOS_POR_USUARIO})</span>`;
+          deviceBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-slate-700/60 text-slate-300 border border-slate-600"><i data-lucide="smartphone" class="w-3 h-3"></i> Pendiente (0/${MAX_EQUIPOS_POR_USUARIO})</span>`;
         }
 
         const huellaBadge = emp.credId
-          ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 ml-1.5 rounded-md text-xs font-semibold bg-zinc-800 text-yellow-300 border border-yellow-400/30"><i data-lucide="fingerprint" class="w-3 h-3"></i> Huella</span>`
+          ? `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 ml-1.5 rounded-md text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20"><i data-lucide="fingerprint" class="w-3 h-3"></i> Huella</span>`
           : '';
 
         const photoImg = emp.photo 
-          ? `<img src="${emp.photo}" class="w-9 h-9 rounded-full object-cover border border-yellow-400">`
-          : `<div class="w-9 h-9 rounded-full medallion-badge flex items-center justify-center text-yellow-400"><i data-lucide="user" class="w-5 h-5"></i></div>`;
+          ? `<img src="${emp.photo}" class="w-9 h-9 rounded-full object-cover border border-slate-600">`
+          : `<div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 border border-slate-600"><i data-lucide="user" class="w-5 h-5"></i></div>`;
 
         return `
-          <tr class="hover:bg-zinc-900/80 transition">
+          <tr class="hover:bg-slate-700/30 transition">
             <td class="p-3.5">${photoImg}</td>
-            <td class="p-3.5 font-mono text-zinc-300">${emp.id}</td>
-            <td class="p-3.5 font-medium text-white">${emp.name}${emp.fechaNacimiento ? `<div class="text-[11px] font-normal text-yellow-300 mt-0.5">🎂 ${textoCumple(emp)}</div>` : ''}</td>
-            <td class="p-3.5 text-zinc-400">${emp.dept}</td>
+            <td class="p-3.5 font-mono text-slate-300">${emp.id}</td>
+            <td class="p-3.5 font-medium text-white">${emp.name}${emp.fechaNacimiento ? `<div class="text-[11px] font-normal text-pink-300 mt-0.5">🎂 ${textoCumple(emp)}</div>` : ''}</td>
+            <td class="p-3.5 text-slate-400">${emp.dept}</td>
             <td class="p-3.5">${deviceBadge}${huellaBadge}</td>
             <td class="p-3.5 text-right flex justify-end gap-2">
               ${tieneDispositivo ? `
-                <button onclick="desvincularDispositivo('${emp.id}')" class="p-1.5 bg-yellow-400/15 text-yellow-300 hover:bg-yellow-400 hover:text-zinc-950 rounded-lg transition" title="Desvincular Laptop y Celular">
+                <button onclick="desvincularDispositivo('${emp.id}')" class="p-1.5 bg-amber-600/20 text-amber-400 hover:bg-amber-600 hover:text-white rounded-lg transition" title="Desvincular Laptop y Celular">
                   <i data-lucide="smartphone-nfc" class="w-4 h-4"></i>
                 </button>
               ` : ''}
-              <button onclick="prepararEdicionEmpleado(${index})" class="p-1.5 bg-zinc-800 text-yellow-400 hover:bg-yellow-400 hover:text-zinc-950 rounded-lg transition" title="Editar / Cambiar PIN / Foto">
+              <button onclick="prepararEdicionEmpleado(${index})" class="p-1.5 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white rounded-lg transition" title="Editar / Cambiar PIN / Foto">
                 <i data-lucide="edit-3" class="w-4 h-4"></i>
               </button>
               <button onclick="eliminarEmpleado('${emp.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded-lg transition" title="Eliminar">
@@ -3860,7 +3847,7 @@
       document.getElementById('emp-photo-file').value = '';
       const previewContainer = document.getElementById('emp-photo-preview-container');
       if (previewContainer) {
-        previewContainer.innerHTML = `<i data-lucide="image" class="w-6 h-6 text-yellow-400"></i>`;
+        previewContainer.innerHTML = `<i data-lucide="image" class="w-6 h-6 text-slate-500"></i>`;
       }
       document.getElementById('btn-remove-photo')?.classList.add('hidden');
       if (window.lucide) lucide.createIcons();
@@ -3979,17 +3966,17 @@
           previewContainer.innerHTML = `<img src="${emp.photo}" class="w-full h-full object-cover">`;
           document.getElementById('btn-remove-photo')?.classList.remove('hidden');
         } else {
-          previewContainer.innerHTML = `<i data-lucide="image" class="w-6 h-6 text-yellow-400"></i>`;
+          previewContainer.innerHTML = `<i data-lucide="image" class="w-6 h-6 text-slate-500"></i>`;
           document.getElementById('btn-remove-photo')?.classList.add('hidden');
         }
       }
 
       document.getElementById('employee-form-title').innerHTML = `
-        <i data-lucide="edit" class="w-4 h-4 text-yellow-400"></i>
+        <i data-lucide="edit" class="w-4 h-4 text-amber-400"></i>
         Corregir / Editar Colaborador
       `;
       document.getElementById('btn-save-emp').innerText = 'Guardar Cambios';
-      document.getElementById('btn-save-emp').className = 'flex-1 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition';
+      document.getElementById('btn-save-emp').className = 'flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 rounded-lg text-xs transition';
       document.getElementById('btn-cancel-emp-edit').classList.remove('hidden');
 
       if (window.lucide) lucide.createIcons();
@@ -4004,11 +3991,11 @@
       removerFotoSeleccionada();
 
       document.getElementById('employee-form-title').innerHTML = `
-        <i data-lucide="user-plus" class="w-4 h-4 text-yellow-400"></i>
+        <i data-lucide="user-plus" class="w-4 h-4 text-blue-400"></i>
         Agregar Nuevo Colaborador
       `;
       document.getElementById('btn-save-emp').innerText = 'Guardar Colaborador';
-      document.getElementById('btn-save-emp').className = 'flex-1 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-black py-2.5 rounded-lg text-xs transition';
+      document.getElementById('btn-save-emp').className = 'flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-xs transition';
       document.getElementById('btn-cancel-emp-edit').classList.add('hidden');
       if (window.lucide) lucide.createIcons();
     }
@@ -4053,7 +4040,7 @@
           emp.credPubKey = null;
           emp.credAlg = null;
 
-          localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+          localStorage.setItem('checkin_employees', JSON.stringify(empleados));
           if (employeesRef) {
             employeesRef.child(emp._key || empId.replace(/[^a-zA-Z0-9]/g, '_')).update({
               registeredDeviceTokens: null,
@@ -4096,7 +4083,7 @@
     function borrarTodoElHistorial() {
       if (confirm('¿Estás completamente seguro de borrar todo el historial de marcas en la nube? Esta acción no se puede deshacer.')) {
         historial = [];
-        localStorage.removeItem('checkin_e1_history');
+        localStorage.removeItem('checkin_history');
         guardarColaOffline([]);
         if (historyRef) {
           historyRef.remove();
@@ -4117,14 +4104,14 @@
       document.getElementById('toast-msg').innerText = message;
 
       if (type === 'success') {
-        toast.className = toast.className.replace(/border-l-\S+/, 'border-l-yellow-400');
-        icon.className = 'w-6 h-6 text-yellow-400';
+        toast.className = toast.className.replace(/border-\w+-500/, 'border-emerald-500');
+        icon.className = 'w-6 h-6 text-emerald-400';
       } else if (type === 'error') {
-        toast.className = toast.className.replace(/border-l-\S+/, 'border-l-rose-500');
+        toast.className = toast.className.replace(/border-\w+-500/, 'border-rose-500');
         icon.className = 'w-6 h-6 text-rose-400';
       } else {
-        toast.className = toast.className.replace(/border-l-\S+/, 'border-l-amber-400');
-        icon.className = 'w-6 h-6 text-amber-400';
+        toast.className = toast.className.replace(/border-\w+-500/, 'border-blue-500');
+        icon.className = 'w-6 h-6 text-blue-400';
       }
 
       toast.classList.remove('translate-x-full', 'opacity-0');
