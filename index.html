@@ -333,7 +333,7 @@
           <div class="relative" id="employee-combobox-wrapper">
             <div class="relative flex items-center">
               <i data-lucide="search" class="w-4 h-4 text-yellow-400 absolute left-3.5 pointer-events-none z-10"></i>
-              <input type="text" id="employee-search-input" oninput="filterEmployeeCombobox()" onfocus="openEmployeeCombobox()" placeholder="Escribe tu ID de empleado (o nombre)..." class="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-xl pl-10 pr-10 py-3.5 focus:outline-none focus:border-yellow-400 font-medium text-sm">
+              <input type="text" id="employee-search-input" autocomplete="off" autocapitalize="off" spellcheck="false" oninput="filterEmployeeCombobox()" onfocus="openEmployeeCombobox()" placeholder="Escribe tu ID de empleado (o nombre)..." class="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-xl pl-10 pr-10 py-3.5 focus:outline-none focus:border-yellow-400 font-medium text-sm">
               <button type="button" onclick="toggleEmployeeCombobox()" class="absolute right-3 p-1 text-zinc-400 hover:text-yellow-400">
                 <i data-lucide="chevron-down" class="w-5 h-5"></i>
               </button>
@@ -360,7 +360,7 @@
             <i data-lucide="key" class="w-4 h-4"></i>
             Ingresa tu PIN Secreto de Empleado
           </label>
-          <input type="password" id="employee-pin-input" oninput="checkCanSubmit()" maxlength="8" placeholder="****" class="w-full bg-zinc-900 border border-zinc-700 text-yellow-300 font-mono tracking-widest text-center text-xl rounded-lg px-3 py-2.5 focus:outline-none focus:border-yellow-400">
+          <input type="password" id="employee-pin-input" autocomplete="new-password" oninput="checkCanSubmit()" maxlength="8" placeholder="****" class="w-full bg-zinc-900 border border-zinc-700 text-yellow-300 font-mono tracking-widest text-center text-xl rounded-lg px-3 py-2.5 focus:outline-none focus:border-yellow-400">
           <p class="text-[11px] text-zinc-400 italic text-center">Requerido para confirmar tu identidad</p>
         </div>
 
@@ -1127,7 +1127,7 @@
           renderEmployeesTable();
           renderTurnosTable();
           renderHoursTable();
-          if (selectedEmployeeId) onSelectEmployee();
+          if (selectedEmployeeId) onSelectEmployee(true);
         } catch (e) {
           console.error("Error al procesar snapshot de empleados:", e);
         }
@@ -2366,7 +2366,9 @@
       const dropdown = document.getElementById('employee-dropdown-list');
       if (!dropdown) return;
 
-      const term = filterText.toLowerCase().trim();
+      let term = filterText.toLowerCase().trim();
+      const mEtiqueta = term.match(/\(([^()]+)\)\s*$/);
+      if (mEtiqueta) term = mEtiqueta[1].trim();
       if (!term) {
         dropdown.innerHTML = `<div class="p-4 text-center text-xs text-zinc-400 italic">Escribe tu ID de empleado para buscar...</div>`;
         return;
@@ -2436,6 +2438,8 @@
           onSelectEmployee();
         }
       }
+      const exacto = !selectedEmployeeId && empleados.find(e => `${e.name} (${e.id})`.toLowerCase() === inputVal.trim().toLowerCase());
+      if (exacto) { selectEmployeeFromCombobox(exacto.id); return; }
       openEmployeeCombobox();
     }
 
@@ -2460,12 +2464,12 @@
       }
     });
 
-    function onSelectEmployee() {
+    function onSelectEmployee(conservarPin = false) {
       const card = document.getElementById('employee-card');
       const pinContainer = document.getElementById('pin-input-container');
       const pinInput = document.getElementById('employee-pin-input');
 
-      if (pinInput) pinInput.value = '';
+      if (pinInput && !conservarPin) pinInput.value = '';
       actualizarBadgeHorario();
 
       if (!selectedEmployeeId) {
