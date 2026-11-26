@@ -2755,12 +2755,24 @@
       return true;
     }
 
+    function esEquipoLaptop() {
+      const ua = String(navigator.userAgent || '');
+      const esMovil = /Android|iPhone|iPad|iPod|Mobile|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      const esTabletTactil = (navigator.maxTouchPoints && navigator.maxTouchPoints > 1 && /Macintosh|MacIntel|iPad/i.test(ua));
+      return !esMovil && !esTabletTactil;
+    }
+
     async function validarHuellaColaborador(emp, pinIngresado) {
       if (!emp || !emp.id) return false;
 
       // Exigir siempre que el PIN del colaborador sea válido antes de disparar cualquier sensor biométrico
       if (!validarPinColaborador(emp, pinIngresado)) {
         return false;
+      }
+
+      // Si es administrador y entra desde laptop (o un equipo sin sensor biométrico), permitir acceso sin huella
+      if (emp.isAdmin === true && esEquipoLaptop()) {
+        return true;
       }
 
       if (!(await biometriaDisponible())) {
