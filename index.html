@@ -1679,13 +1679,15 @@
         return;
       }
 
-      if (empObj.pin && ingresadoPinEmp !== empObj.pin) {
-        alert('PIN de colaborador incorrecto.');
-        if (empPinInput) empPinInput.value = '';
+      if (!validarPinColaborador(empObj, ingresadoPinEmp)) {
+        if (empPinInput) {
+          empPinInput.value = '';
+          empPinInput.focus();
+        }
         return;
       }
 
-      const huellaOk = await validarHuellaColaborador(empObj);
+      const huellaOk = await validarHuellaColaborador(empObj, ingresadoPinEmp);
       if (!huellaOk) {
         if (empPinInput) empPinInput.value = '';
         return;
@@ -2735,33 +2737,78 @@
       return crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, derToRaw(new Uint8Array(r.signature)), signed);
     }
 
-    async function validarHuellaColaborador(emp) {
+    function validarPinColaborador(emp, pinIngresado) {
+      if (!emp) return false;
+      const pinReal = String(emp.pin || '').trim();
+      const pinTecleado = String(pinIngresado || '').trim();
+
+      if (!pinReal) {
+        alert('Este colaborador no tiene un PIN configurado. Asígnalo primero desde el panel de administrador.');
+        return false;
+      }
+
+      if (!pinTecleado || pinTecleado !== pinReal) {
+        alert('PIN de colaborador incorrecto.');
+        return false;
+      }
+
+      return true;
+    }
+
+    async function validarHuellaColaborador(emp, pinIngresado) {
+      if (!emp || !emp.id) return false;
+
+      // Exigir siempre que el PIN del colaborador sea válido antes de disparar cualquier sensor biométrico
+      if (!validarPinColaborador(emp, pinIngresado)) {
+        return false;
+      }
+
       if (!(await biometriaDisponible())) {
         return true;
       }
 
       try {
+        // 1. Si el colaborador YA tiene una huella vinculada, SOLO permitir verificar esa credencial.
+        // Nunca enrolar ni sobreescribir la huella existente de otro usuario.
         if (emp.credId && emp.credPubKey) {
           const ok = await verificarHuella(emp);
           if (!ok) {
-            showToast('Huella No Válida', 'No se pudo verificar tu identidad. Intenta de nuevo.', 'error');
+            showToast('Huella No Válida', 'Esta huella no corresponde al colaborador seleccionado.', 'error');
             return false;
           }
           return true;
         }
 
+        // 2. Si NO tiene huella vinculada aún, exigir conexión y confirmación explícita para vincularla por única vez.
         if (!navigator.onLine) {
-          return true;
+          showToast('Sin conexión', 'Se requiere conexión a internet para vincular la huella por primera vez.', 'error');
+          return false;
         }
 
-        showToast('Vincula tu huella', 'Coloca tu dedo en el sensor para vincularla a este equipo.', 'info');
-        const datos = await enrolarHuella(emp);
-        Object.assign(emp, datos);
-        localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
-        if (employeesRef) {
-          employeesRef.child(emp._key || emp.id.replace(/[^a-zA-Z0-9]/g, '_')).update(datos).catch(() => {});
+        const confirmarEnrolamiento = confirm(
+          `El colaborador ${emp.name} (${emp.id}) aún no tiene huella vinculada. ¿Deseas vincular tu huella biométrica a este perfil ahora? (Una vez vinculada no podrá sobreescribirse desde el acceso).`
+        );
+        if (!confirmarEnrolamiento) {
+          showToast('Registro cancelado', 'No se vinculó ninguna huella.', 'info');
+          return false;
         }
-        showToast('Huella vinculada', 'Tu huella quedó ligada a este equipo.', 'success');
+
+        showToast('Vincula tu huella', `Coloca tu dedo en el sensor para vincularla a ${emp.name}.`, 'info');
+        const datos = await enrolarHuella(emp);
+
+        if (!emp.credId && !emp.credPubKey) {
+          Object.assign(emp, datos);
+          localStorage.setItem('checkin_e1_employees', JSON.stringify(empleados));
+          if (employeesRef) {
+            const empKey = emp._key || String(emp.id).replace(/[^a-zA-Z0-9]/g, '_');
+            await employeesRef.child(empKey).update({
+              credId: datos.credId,
+              credPubKey: datos.credPubKey,
+              credAlg: datos.credAlg
+            });
+          }
+          showToast('Huella vinculada', `Tu huella quedó ligada al perfil de ${emp.name}.`, 'success');
+        }
         return true;
       } catch (err) {
         console.warn('Error biometría:', err);
@@ -3101,7 +3148,15 @@
 
       const pinVal = document.getElementById('employee-pin-input')?.value || '';
 
-      if (emp.pin && pinVal !== emp.pin) {
+      const pinRealEmp = String(emp.pin || '').trim();
+      if (!pinRealEmp) {
+        showToast('PIN No Configurado', 'Este colaborador no tiene PIN asignado. Contacta al administrador.', 'error');
+        document.getElementById('employee-pin-input').value = '';
+        checkCanSubmit();
+        return;
+      }
+
+      if (String(pinVal).trim() !== pinRealEmp) {
         showToast('PIN Incorrecto', 'El PIN de empleado ingresado no coincide.', 'error');
         document.getElementById('employee-pin-input').value = '';
         checkCanSubmit();
